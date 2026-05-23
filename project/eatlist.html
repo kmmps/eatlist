@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>eatlist — app para foodies</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"
+    integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"
+    integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+    integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d0d0d;
+      background-image:
+        radial-gradient(ellipse 80% 60% at 20% 20%, rgba(235,101,88,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 80%, rgba(113,204,151,0.07) 0%, transparent 60%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    #phone-shell {
+      width: 390px;
+      height: 844px;
+      position: relative;
+      border-radius: 50px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 10px #1a1a1a,
+        0 0 0 12px #2a2a2a,
+        0 40px 120px rgba(0,0,0,0.8);
+      /* notch simulation via outline trick */
+    }
+
+    /* Phone notch */
+    #phone-shell::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 30px;
+      background: #0d0d0d;
+      border-radius: 0 0 20px 20px;
+      z-index: 9999;
+    }
+
+    #root {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Map overrides */
+    .leaflet-control-attribution,
+    .leaflet-control-zoom { display: none !important; }
+
+    /* No scrollbar */
+    ::-webkit-scrollbar { width: 0; height: 0; }
+
+    /* Tap highlight off */
+    * { -webkit-tap-highlight-color: transparent; user-select: none; }
+    input { user-select: text; }
+
+    /* Screen label (for verifier) */
+    [data-screen-label] { position: absolute; inset: 0; }
+  </style>
+
+  <!-- ── App Data ── -->
+  <script>
+    window.DATA = {
+      lists: [
+        {
+          id: 1, title: 'Padarias no centro', author: 'Victoria Khatounian',
+          followers: 12, category: 'Padaria',
+          img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&fit=crop&auto=format',
+          restaurants: [
+            { id: 1,  name: 'Fabrique Pães',      address: 'Rua Diana, 331 · Perdizes',         tags: ['Padaria','Café'],        lat: -23.5429, lng: -46.6682, likes: 4,  dislikes: 1, friendsLiked: 3, friendsDisliked: 1 },
+            { id: 2,  name: 'Boulangerie Guerin', address: 'Rua Oscar Freire, 145 · Jardins',    tags: ['Padaria','Francês'],    lat: -23.5641, lng: -46.6703, likes: 7,  dislikes: 0, friendsLiked: 2, friendsDisliked: 0 },
+            { id: 3,  name: 'Panetteria',         address: 'Av. Angélica, 100 · Higienópolis',   tags: ['Padaria','Italiano'],   lat: -23.5467, lng: -46.6568, likes: 5,  dislikes: 2, friendsLiked: 1, friendsDisliked: 2 },
+          ]
+        },
+        {
+          id: 2, title: 'Os melhores hamburgueres', author: 'Rafael Moraes',
+          followers: 89, category: 'Hamburguer',
+          img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&fit=crop&auto=format',
+          restaurants: [
+            { id: 4,  name: 'Cão Véio',              address: 'Rua Mourato Coelho, 416 · Pinheiros', tags: ['Hamburguer','Bar'],      lat: -23.5617, lng: -46.6895, likes: 10, dislikes: 1, friendsLiked: 5, friendsDisliked: 0 },
+            { id: 5,  name: 'Lanchonete da Cidade',  address: 'Rua Bela Cintra, 1105 · Jardins',     tags: ['Hamburguer','Clássico'], lat: -23.5638, lng: -46.6633, likes: 8,  dislikes: 2, friendsLiked: 4, friendsDisliked: 1 },
+          ]
+        },
+        {
+          id: 3, title: 'Petiscos do mar', author: 'Isabela Kempinas',
+          followers: 34, category: 'Frutos do Mar',
+          img: 'https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?w=400&fit=crop&auto=format',
+          restaurants: [
+            { id: 6,  name: 'Maremoto',       address: 'Rua Alves Guimarães, 462 · Pinheiros', tags: ['Frutos do Mar','Bar'], lat: -23.5635, lng: -46.6862, likes: 6, dislikes: 1, friendsLiked: 2, friendsDisliked: 0 },
+            { id: 7,  name: 'Frade dos Mares',address: 'Alameda Lorena, 1748 · Jardins',        tags: ['Peixe','Contemporâneo'],lat: -23.5723, lng: -46.6636, likes: 9, dislikes: 0, friendsLiked: 3, friendsDisliked: 0 },
+          ]
+        },
+        {
+          id: 4, title: 'Boas Pizzas', author: 'Pedro Cavalcanti',
+          followers: 203, category: 'Pizza',
+          img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&fit=crop&auto=format',
+          restaurants: [
+            { id: 8,  name: 'Bráz Pizzaria', address: 'Rua Graúna, 125 · Moema',               tags: ['Pizza','Clássica'],  lat: -23.5879, lng: -46.6672, likes: 15, dislikes: 2, friendsLiked: 6, friendsDisliked: 1 },
+            { id: 9,  name: 'Leggera Pizza', address: 'Rua Joaquim Antunes, 217 · Pinheiros',   tags: ['Pizza','Italiana'], lat: -23.5681, lng: -46.6885, likes: 11, dislikes: 1, friendsLiked: 4, friendsDisliked: 0 },
+          ]
+        },
+        {
+          id: 5, title: 'Pro café da manhã', author: 'Victoria Khatounian',
+          followers: 57, category: 'Café',
+          img: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&fit=crop&auto=format',
+          restaurants: [
+            { id: 10, name: 'Torino Café', address: 'Rua Haddock Lobo, 1002 · Jardins',          tags: ['Café','Brunch'],   lat: -23.5588, lng: -46.6669, likes: 8,  dislikes: 0, friendsLiked: 3, friendsDisliked: 0 },
+            { id: 11, name: 'Hood Café',   address: 'Rua Medeiros, 258 · Vila Madalena',          tags: ['Café','Specialty'],lat: -23.5547, lng: -46.6929, likes: 12, dislikes: 1, friendsLiked: 5, friendsDisliked: 0 },
+          ]
+        },
+        {
+          id: 6, title: 'Top lamens', author: 'Kenji Tanaka',
+          followers: 445, category: 'Japonês',
+          img: 'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=400&fit=crop&auto=format',
+          restaurants: [
+            { id: 12, name: 'Lamen Aska',    address: 'Rua Tomás Gonzaga, 56 · Liberdade',       tags: ['Japonês','Ramen'],  lat: -23.5563, lng: -46.6337, likes: 20, dislikes: 1, friendsLiked: 8, friendsDisliked: 0 },
+            { id: 13, name: 'Jun Sakamoto',  address: 'Rua Lisboa, 55 · Pinheiros',               tags: ['Japonês','Omakase'],lat: -23.5628, lng: -46.6856, likes: 18, dislikes: 2, friendsLiked: 7, friendsDisliked: 1 },
+          ]
+        },
+      ],
+      friends: [
+        { id: 1, name: 'Fabrício Moraes',  avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&fit=crop&crop=face' },
+        { id: 2, name: 'Isabela Kempinas', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&fit=crop&crop=face' },
+        { id: 3, name: 'Pedro Cavalcanti', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&fit=crop&crop=face' },
+      ],
+      feedItems: [
+        {
+          friend: { name: 'Isabela Kempinas', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&fit=crop&crop=face' },
+          action: 'atualizou uma lista', time: '2h', listId: 3, following: true,
+          description: 'Frutos do mar que provam que o mar de São Paulo não precisa ser longe — só precisa ser fresco.'
+        },
+        {
+          friend: { name: 'Pedro Cavalcanti', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&fit=crop&crop=face' },
+          action: 'criou uma lista', time: '5h', listId: 4, following: true,
+          description: 'As pizzas que valem a fila — e algumas que nem têm fila, mas deveriam.'
+        },
+        {
+          friend: { name: 'Fabrício Moraes', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&fit=crop&crop=face' },
+          action: 'adicionou à lista', time: '1d', listId: 6, following: true,
+          description: 'Do tonkotsu ao shoyu — os lamens que fazem você esquecer que está em SP.'
+        },
+      ],
+      user: {
+        name: 'Victoria Khatounian', handle: '@victoria.k',
+        followers: 12, following: 16,
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&fit=crop&crop=face',
+        myListIds: [1, 5],
+      }
+    };
+  </script>
+</head>
+<body>
+  <div id="phone-shell">
+    <div id="root"></div>
+  </div>
+
+  <script type="text/babel" src="js/icons.jsx"></script>
+  <script type="text/babel" src="js/ui.jsx"></script>
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="js/screens1.jsx"></script>
+  <script type="text/babel" src="js/screens2.jsx"></script>
+  <script type="text/babel" src="js/app.jsx"></script>
+</body>
+</html>
