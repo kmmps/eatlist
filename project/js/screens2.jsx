@@ -68,45 +68,44 @@ const MapScreen = ({ dark, go, allLists }) => {
 
       {/* Bottom sheet: selected restaurant */}
       {selected && (
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 700 }}>
-          {/* Backdrop tap to close */}
-          <div onClick={() => setSelected(null)} style={{ position: 'fixed', inset: 0, zIndex: -1 }}/>
-          <div style={{ background: c.bg, borderRadius: '28px 28px 0 0', padding: '12px 22px 32px', boxShadow: '0 -4px 40px rgba(0,0,0,0.18)' }}>
-            {/* Drag handle */}
-            <div style={{ width: 40, height: 4, background: GRAY + '50', borderRadius: 2, margin: '0 auto 16px' }}/>
-
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ ...ts(24), color: c.text, marginBottom: 4, lineHeight: 1 }}>{selected.name}</div>
-                <div style={{ ...ts(13), color: GRAY }}>{selected.address}</div>
-              </div>
-              <button onClick={() => setSelected(null)} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4 }}>
-                <CloseIc s={18} col={GRAY}/>
-              </button>
-            </div>
-
-            <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-              {selected.tags.map(t => (
-                <span key={t} style={{ background: c.surf, borderRadius: 100, padding: '5px 12px', ...ts(13), color: GRAY }}>{t}</span>
-              ))}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: GREEN + '20', borderRadius: 100, padding: '5px 12px' }}>
-                <ThumbUpIc s={12} col={GREEN}/>
-                <span style={{ ...ts(13, 700), color: GREEN }}>{selected.likes}</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: CORAL + '15', borderRadius: 100, padding: '5px 12px' }}>
-                <ThumbDownIc s={12} col={CORAL}/>
-                <span style={{ ...ts(13, 700), color: CORAL }}>{selected.dislikes}</span>
+        <div style={{ position: 'absolute', inset: 0, zIndex: 700 }}>
+          <div onClick={() => setSelected(null)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }}/>
+          <div style={{ position: 'absolute', top: 60, left: 0, right: 0, bottom: 0, background: c.bg, borderRadius: '28px 28px 0 0', boxShadow: '0 -4px 40px rgba(0,0,0,0.18)', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '12px 22px 0', flexShrink: 0 }}>
+              <div style={{ width: 40, height: 4, background: GRAY + '50', borderRadius: 2, margin: '0 auto 16px' }}/>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ ...ts(24), color: c.text, marginBottom: 4, lineHeight: 1 }}>{selected.name}</div>
+                  <div style={{ ...ts(13), color: GRAY }}>{selected.address}</div>
+                </div>
+                <button onClick={() => setSelected(null)} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4 }}>
+                  <CloseIc s={18} col={GRAY}/>
+                </button>
               </div>
             </div>
-
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => { go('restaurant', { restaurantId: selected.id }); setSelected(null); }}
-                style={{ flex: 1, height: 46, background: CORAL, border: 'none', borderRadius: 14, cursor: 'pointer', ...ts(15, 700), color: 'white' }}>
-                Ver restaurante
-              </button>
-              <button style={{ width: 46, height: 46, background: c.surf, border: 'none', borderRadius: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <ShareIc s={18} col={GRAY}/>
-              </button>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '0 22px', paddingBottom: 90 }}>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+                {selected.tags.map(t => (
+                  <span key={t} style={{ background: c.surf, borderRadius: 100, padding: '5px 12px', ...ts(13), color: GRAY }}>{t}</span>
+                ))}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: GREEN + '20', borderRadius: 100, padding: '5px 12px' }}>
+                  <ThumbUpIc s={12} col={GREEN}/>
+                  <span style={{ ...ts(13, 700), color: GREEN }}>{selected.likes}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: CORAL + '15', borderRadius: 100, padding: '5px 12px' }}>
+                  <ThumbDownIc s={12} col={CORAL}/>
+                  <span style={{ ...ts(13, 700), color: CORAL }}>{selected.dislikes}</span>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button onClick={() => { go('restaurant', { restaurantId: selected.id }); setSelected(null); }}
+                  style={{ flex: 1, height: 46, background: CORAL, border: 'none', borderRadius: 14, cursor: 'pointer', ...ts(15, 700), color: 'white' }}>
+                  Ver restaurante
+                </button>
+                <button style={{ width: 46, height: 46, background: c.surf, border: 'none', borderRadius: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ShareIc s={18} col={GRAY}/>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -258,16 +257,18 @@ const ListOpenScreen = ({ dark, go, back, listId, allLists }) => {
       {friendsSheet && (
         <div style={{ position: 'absolute', inset: 0, zIndex: 800 }}>
           <div onClick={() => setFriendsSheet(null)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }}/>
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: c.bg, borderRadius: '28px 28px 0 0', padding: '12px 22px 40px', boxShadow: '0 -4px 40px rgba(0,0,0,0.15)' }}>
-            <div style={{ width: 40, height: 4, background: GRAY + '50', borderRadius: 2, margin: '0 auto 20px' }}/>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-              {friendsSheet.type === 'up' ? <ThumbUpIc s={18} col={GREEN}/> : <ThumbDownIc s={18} col={CORAL}/>}
-              <span style={{ ...ts(18, 700), color: c.text }}>
-                {friendsSheet.type === 'up' ? 'Amigos que gostaram' : 'Amigos que não gostaram'}
-              </span>
+          <div style={{ position: 'absolute', top: 60, left: 0, right: 0, bottom: 0, background: c.bg, borderRadius: '28px 28px 0 0', boxShadow: '0 -4px 40px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '12px 22px 0', flexShrink: 0 }}>
+              <div style={{ width: 40, height: 4, background: GRAY + '50', borderRadius: 2, margin: '0 auto 20px' }}/>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                {friendsSheet.type === 'up' ? <ThumbUpIc s={18} col={GREEN}/> : <ThumbDownIc s={18} col={CORAL}/>}
+                <span style={{ ...ts(18, 700), color: c.text }}>
+                  {friendsSheet.type === 'up' ? 'Amigos que gostaram' : 'Amigos que não gostaram'}
+                </span>
+              </div>
+              <div style={{ ...ts(15, 600), color: GRAY, marginBottom: 16 }}>{friendsSheet.restaurant.name}</div>
             </div>
-            <div style={{ ...ts(15, 600), color: GRAY, marginBottom: 12 }}>{friendsSheet.restaurant.name}</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '0 22px', paddingBottom: 90, display: 'flex', flexDirection: 'column', gap: 12 }}>
               {friends.slice(0, friendsSheet.type === 'up' ? friendsSheet.restaurant.friendsLiked : friendsSheet.restaurant.friendsDisliked).map(f => (
                 <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <img src={f.avatar} style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover' }}/>
@@ -328,17 +329,20 @@ const ListOpenScreen = ({ dark, go, back, listId, allLists }) => {
       {followersSheet && (
         <div style={{ position: 'absolute', inset: 0, zIndex: 900 }}>
           <div onClick={() => setFollowersSheet(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }}/>
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: c.bg, borderRadius: '24px 24px 0 0', border: `1px solid ${c.border}`, boxShadow: '0 -4px 40px rgba(0,0,0,0.15)', maxHeight: '70vh', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px 22px 16px', flexShrink: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <UserIc s={15} col={CORAL}/>
-                <span style={{ ...ts(16), color: c.text }}>Amigos que seguem</span>
+          <div style={{ position: 'absolute', top: 60, left: 0, right: 0, bottom: 0, background: c.bg, borderRadius: '28px 28px 0 0', boxShadow: '0 -4px 40px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '12px 22px 0', flexShrink: 0 }}>
+              <div style={{ width: 40, height: 4, background: GRAY + '50', borderRadius: 2, margin: '0 auto 20px' }}/>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <UserIc s={15} col={CORAL}/>
+                  <span style={{ ...ts(18, 700), color: c.text }}>Amigos que seguem</span>
+                </div>
+                <button onClick={() => setFollowersSheet(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4 }}>
+                  <CloseIc s={20} col={GRAY}/>
+                </button>
               </div>
-              <button onClick={() => setFollowersSheet(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4 }}>
-                <CloseIc s={20} col={GRAY}/>
-              </button>
             </div>
-            <div style={{ overflowY: 'auto', padding: '0 22px', paddingBottom: 90, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '0 22px', paddingBottom: 90, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {friends.map(f => (
                 <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 12, background: c.surf, borderRadius: 16 }}>
                   <img src={f.avatar} style={{ width: 30, height: 30, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}/>
@@ -537,16 +541,18 @@ const RestaurantScreen = ({ dark, go, back, restaurantId, allLists }) => {
       {listSheet && (
         <div style={{ position: 'absolute', inset: 0, zIndex: 900 }}>
           <div onClick={() => setListSheet(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }}/>
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: c.bg, borderRadius: '24px 24px 0 0', border: `1px solid ${c.border}`, boxShadow: '0 -4px 40px rgba(0,0,0,0.15)', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
-            {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px 22px 16px', flexShrink: 0 }}>
-              <span style={{ ...ts(16), color: GRAY }}>Suas listas</span>
+          <div style={{ position: 'absolute', top: 60, left: 0, right: 0, bottom: 0, background: c.bg, borderRadius: '28px 28px 0 0', boxShadow: '0 -4px 40px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '12px 22px 0', flexShrink: 0 }}>
+              <div style={{ width: 40, height: 4, background: GRAY + '50', borderRadius: 2, margin: '0 auto 20px' }}/>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <span style={{ ...ts(18, 700), color: c.text }}>Suas listas</span>
               <button onClick={() => setListSheet(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4 }}>
                 <CloseIc s={20} col={GRAY}/>
               </button>
+              </div>
             </div>
 
-            <div style={{ overflowY: 'auto', padding: '0 22px', paddingBottom: 90 }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '0 22px', paddingBottom: 90 }}>
               {/* Criar nova lista */}
               <button onClick={() => { setListSheet(false); go('new-list'); }}
                 style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: 12, background: 'none', border: `1px solid ${c.border}`, borderRadius: 16, cursor: 'pointer', marginBottom: 16 }}>
@@ -594,26 +600,25 @@ const RestaurantScreen = ({ dark, go, back, restaurantId, allLists }) => {
       {friendsSheet && (
         <div style={{ position: 'absolute', inset: 0, zIndex: 900 }}>
           <div onClick={() => setFriendsSheet(null)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }}/>
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: c.bg, borderRadius: '24px 24px 0 0', padding: '24px 22px 0', boxShadow: '0 -4px 40px rgba(0,0,0,0.15)', border: `1px solid ${c.border}`, maxHeight: '70vh', display: 'flex', flexDirection: 'column' }}>
-            {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexShrink: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                {friendsSheet === 'up'
-                  ? <ThumbUpIc s={15} col={CORAL}/>
-                  : <ThumbDownIc s={15} col={CORAL}/>}
-                <span style={{ ...ts(16), color: c.text }}>{friendsSheet === 'up' ? 'Quem gostou' : 'Quem não gostou'}</span>
+          <div style={{ position: 'absolute', top: 60, left: 0, right: 0, bottom: 0, background: c.bg, borderRadius: '28px 28px 0 0', boxShadow: '0 -4px 40px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '12px 22px 0', flexShrink: 0 }}>
+              <div style={{ width: 40, height: 4, background: GRAY + '50', borderRadius: 2, margin: '0 auto 20px' }}/>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  {friendsSheet === 'up' ? <ThumbUpIc s={15} col={CORAL}/> : <ThumbDownIc s={15} col={CORAL}/>}
+                  <span style={{ ...ts(18, 700), color: c.text }}>{friendsSheet === 'up' ? 'Quem gostou' : 'Quem não gostou'}</span>
+                </div>
+                <button onClick={() => setFriendsSheet(null)} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4 }}>
+                  <CloseIc s={20} col={GRAY}/>
+                </button>
               </div>
-              <button onClick={() => setFriendsSheet(null)} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4 }}>
-                <CloseIc s={20} col={GRAY}/>
-              </button>
             </div>
-            {/* Friends list — scrollable, clears nav bar */}
-            <div style={{ overflowY: 'auto', paddingBottom: 90, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '0 22px', paddingBottom: 90, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {friends.slice(0, friendsSheet === 'up' ? restaurant.friendsLiked : restaurant.friendsDisliked).map(f => (
                 <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 12, background: c.surf, borderRadius: 16 }}>
                   <img src={f.avatar} style={{ width: 30, height: 30, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}/>
                   <span style={{ ...ts(16), color: c.text, flex: 1 }}>{f.name}</span>
-                  <button style={{ border: 'none', background: 'white', borderRadius: 8, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                  <button style={{ border: 'none', background: c.bg, borderRadius: 8, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                     <UserIc s={16} col={GRAY}/>
                   </button>
                 </div>
