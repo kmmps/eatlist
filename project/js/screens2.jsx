@@ -553,44 +553,31 @@ const RestaurantScreen = ({ dark, go, back, restaurantId, allLists }) => {
             </div>
 
             <div style={{ flex: 1, overflowY: 'auto', padding: '0 22px', paddingBottom: 90 }}>
-              {/* Criar nova lista */}
-              <button onClick={() => { setListSheet(false); go('new-list'); }}
-                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: 12, background: 'none', border: `1px solid ${c.border}`, borderRadius: 16, cursor: 'pointer', marginBottom: 16 }}>
-                <div style={{ width: 32, height: 32, background: c.surf, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <ListIc s={16} col={GRAY}/>
-                </div>
-                <span style={{ ...ts(16, 700), color: c.text }}>Criar uma nova lista</span>
-              </button>
-
-              {/* Grid 2 colunas */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
                 {allLists.map(l => {
                   const isAdded = addedToLists.has(l.id);
                   return (
-                    <div key={l.id} onClick={() => isAdded ? (setListSheet(false), go('list-open', { listId: l.id })) : toggleList(l.id)} style={{ cursor: 'pointer' }}>
-                      {/* Thumbnail */}
-                      <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', aspectRatio: '1', marginBottom: 8 }}>
-                        <img src={l.img} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', opacity: isAdded ? 0.45 : 1, transition: 'opacity 0.2s' }}/>
-                        {isAdded && <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.25)' }}/>}
-                        {/* Já adicionado — badge coral */}
-                        {isAdded && (
-                          <div style={{ position: 'absolute', bottom: 8, right: 8, width: 32, height: 32, borderRadius: '50%', background: CORAL, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
-                            <svg width="18" height="18" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M22.5503 51.1206C25.9262 50.5146 29.1724 49.3491 32.5099 48.5743C35.2624 47.9351 37.8459 47.0116 40.5451 46.1848C53.2862 42.2843 51.8814 45.5188 40.4911 35.2055C39.514 34.3205 37.6636 33.7213 37.2672 32.244C36.4855 29.3299 42.2864 19.6016 43.594 17.4493C45.52 14.2803 32.1051 6.5915 29.5623 3.954" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              <path d="M22.1451 50.8673C20.0013 48.2918 17.1909 46.4302 14.689 44.2325C4.40657 35.1995 9.07298 35.1788 13.7174 22.9759C13.8619 22.5951 15.1697 20.4558 15.052 20.0173C14.8624 19.3105 13.5679 19.8497 12.9102 19.5271C8.62132 17.4178 4.88261 14.3768 1.00016 11.7195" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              <path d="M1.22551 11.702C10.2539 9.19623 20.5497 7.13115 29.3509 3.89591" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              <path d="M11.2648 38.5271C11.229 39.0895 9.40909 38.4649 9.65205 38.2495C11.5416 36.5749 30.9435 35.4126 36.2561 32.9019" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                              <path d="M13.7258 20.0275C22.3282 18.2312 33.4805 16.5459 42.1384 15.1319" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          </div>
-                        )}
+                    <div key={l.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: c.surf, borderRadius: 14, cursor: 'pointer' }}
+                      onClick={() => isAdded ? (setListSheet(false), go('list-open', { listId: l.id })) : toggleList(l.id)}>
+                      <div style={{ width: 40, height: 40, borderRadius: 10, overflow: 'hidden', flexShrink: 0 }}>
+                        <img src={l.img} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
                       </div>
-                      <div style={{ ...ts(16), color: c.text, lineHeight: 1.2, marginBottom: 2 }}>{l.title}</div>
-                      <div style={{ ...ts(13), color: GRAY }}>Sua lista</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ ...ts(15, 500), color: c.text }}>{l.title}</div>
+                        <div style={{ ...ts(12), color: GRAY }}>{l.restaurants.length} restaurantes</div>
+                      </div>
+                      {isAdded
+                        ? <span style={{ ...ts(12, 700), color: GREEN }}>Adicionado</span>
+                        : <PlusIc s={16} col={GRAY}/>}
                     </div>
                   );
                 })}
               </div>
+              <button onClick={() => { setListSheet(false); go('new-list'); }}
+                style={{ width: '100%', height: 48, border: `2px dashed ${c.border}`, borderRadius: 14, background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <PlusIc s={16} col={GRAY}/>
+                <span style={{ ...ts(14, 600), color: GRAY }}>Criar nova lista</span>
+              </button>
             </div>
           </div>
         </div>
