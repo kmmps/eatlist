@@ -157,6 +157,21 @@ const ListOpenScreen = ({ dark, go, back, listId, allLists }) => {
   const [following, setFollowing] = useState(false);
   const [friendsSheet, setFriendsSheet] = useState(null); // { type: 'up'|'down', restaurant }
   const [addToListSheet, setAddToListSheet] = useState(null); // restaurant
+  const [followersSheet, setFollowersSheet] = useState(false);
+  const followLongPressTimer = useRef(null);
+
+  const startFollowLongPress = () => {
+    followLongPressTimer.current = setTimeout(() => {
+      followLongPressTimer.current = 'fired';
+      setFollowersSheet(true);
+    }, 500);
+  };
+  const cancelFollowLongPress = () => {
+    if (followLongPressTimer.current && followLongPressTimer.current !== 'fired') {
+      clearTimeout(followLongPressTimer.current);
+    }
+    followLongPressTimer.current = null;
+  };
 
   if (!list) return null;
 
@@ -202,7 +217,12 @@ const ListOpenScreen = ({ dark, go, back, listId, allLists }) => {
                 ? `${mutuals[0].name.split(' ')[0]} segue`
                 : `${mutuals[0].name.split(' ')[0]} e mais ${count - 1} amigo${count > 2 ? 's' : ''} seguem`;
               return (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: c.surf, borderRadius: 100, padding: '7px 12px 7px 6px' }}>
+                <div
+                  onPointerDown={startFollowLongPress}
+                  onPointerUp={cancelFollowLongPress}
+                  onPointerLeave={cancelFollowLongPress}
+                  onContextMenu={e => e.preventDefault()}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, background: c.surf, borderRadius: 100, padding: '7px 12px 7px 6px', cursor: 'pointer', userSelect: 'none' }}>
                   <div style={{ display: 'flex' }}>
                     {mutuals.map((f, i) => (
                       <img key={f.id} src={f.avatar} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', border: `2px solid ${c.bg}`, marginLeft: i > 0 ? -6 : 0 }}/>
@@ -305,6 +325,35 @@ const ListOpenScreen = ({ dark, go, back, listId, allLists }) => {
               <PlusIc s={16} col={GRAY}/>
               <span style={{ ...ts(14, 600), color: GRAY }}>Criar nova lista</span>
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Followers sheet — long press on badge */}
+      {followersSheet && (
+        <div style={{ position: 'absolute', inset: 0, zIndex: 900 }}>
+          <div onClick={() => setFollowersSheet(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }}/>
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: c.bg, borderRadius: '24px 24px 0 0', border: `1px solid ${c.border}`, boxShadow: '0 -4px 40px rgba(0,0,0,0.15)', maxHeight: '70vh', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px 22px 16px', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <UserIc s={15} col={CORAL}/>
+                <span style={{ ...ts(16), color: c.text }}>Amigos que seguem</span>
+              </div>
+              <button onClick={() => setFollowersSheet(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4 }}>
+                <CloseIc s={20} col={GRAY}/>
+              </button>
+            </div>
+            <div style={{ overflowY: 'auto', padding: '0 22px', paddingBottom: 90, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {friends.map(f => (
+                <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 12, background: c.surf, borderRadius: 16 }}>
+                  <img src={f.avatar} style={{ width: 30, height: 30, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}/>
+                  <span style={{ ...ts(16), color: c.text, flex: 1 }}>{f.name}</span>
+                  <button style={{ border: 'none', background: 'white', borderRadius: 8, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                    <UserIc s={16} col={GRAY}/>
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
