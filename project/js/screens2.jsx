@@ -303,7 +303,7 @@ const ListOpenScreen = ({ dark, go, back, listId, allLists }) => {
                       <div style={{ ...ts(12), color: GRAY }}>{l.restaurants.length} restaurantes</div>
                     </div>
                     {alreadyIn
-                      ? <span style={{ ...ts(12, 700), color: GREEN }}>✓ Adicionado</span>
+                      ? <PlusIc s={16} col={GREEN}/>
                       : <PlusIc s={16} col={GRAY}/>}
                   </div>
                 );
