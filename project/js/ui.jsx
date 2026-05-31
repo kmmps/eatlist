@@ -181,6 +181,39 @@ const ListCardHoriz = ({ list, dark, onClick }) => {
 // ── RestaurantCard (in list-open) ─────────────────────────────────
 const RestaurantCard = ({ restaurant, dark, onOpen, onPlusClick, onLikesClick }) => {
   const c = getC(dark);
+  const friends = window.DATA.friends;
+  const lpTimer = useRef(null);
+
+  const startLP = (type, e) => {
+    e.stopPropagation();
+    lpTimer.current = setTimeout(() => { lpTimer.current = 'fired'; onLikesClick && onLikesClick(type); }, 500);
+  };
+  const cancelLP = () => { if (lpTimer.current && lpTimer.current !== 'fired') clearTimeout(lpTimer.current); lpTimer.current = null; };
+
+  const LikesBadge = ({ type, count }) => {
+    if (count === 0) return null;
+    const col = type === 'up' ? GREEN : CORAL;
+    const avatars = friends.slice(0, Math.min(count, 3));
+    return (
+      <div
+        onPointerDown={e => startLP(type, e)}
+        onPointerUp={e => { e.stopPropagation(); cancelLP(); }}
+        onPointerLeave={cancelLP}
+        onContextMenu={e => e.preventDefault()}
+        style={{ display: 'flex', alignItems: 'center', gap: 5, background: c.surf, borderRadius: 100, padding: '5px 10px', cursor: 'pointer', userSelect: 'none' }}>
+        {type === 'up' ? <ThumbUpIc s={13} col={col}/> : <ThumbDownIc s={13} col={col}/>}
+        <span style={{ ...ts(13, 700), color: GRAY }}>{count}</span>
+        {avatars.length > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            {avatars.map((f, i) => (
+              <img key={f.id} src={f.avatar} style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover', border: `1.5px solid ${c.surf}`, marginLeft: i === 0 ? 2 : -5, position: 'relative', zIndex: avatars.length - i }}/>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div onClick={onOpen} style={{ background: c.surf, borderRadius: 16, padding: '20px 20px 18px', cursor: 'pointer' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 8 }}>
@@ -195,20 +228,8 @@ const RestaurantCard = ({ restaurant, dark, onOpen, onPlusClick, onLikesClick })
       </div>
       <div style={{ ...ts(13), color: GRAY, marginBottom: 10, paddingLeft: 44 }}>{restaurant.address}</div>
       <div style={{ display: 'flex', gap: 8, paddingLeft: 44 }}>
-        {restaurant.friendsLiked > 0 && (
-          <div onClick={e => { e.stopPropagation(); onLikesClick && onLikesClick('up'); }}
-            style={{ display: 'flex', alignItems: 'center', gap: 5, background: c.card, borderRadius: 100, padding: '5px 10px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', cursor: 'pointer' }}>
-            <ThumbUpIc s={13} col={GREEN}/>
-            <span style={{ ...ts(13, 700), color: GRAY }}>{restaurant.friendsLiked} amigo{restaurant.friendsLiked > 1 ? 's' : ''} gostou</span>
-          </div>
-        )}
-        {restaurant.friendsDisliked > 0 && (
-          <div onClick={e => { e.stopPropagation(); onLikesClick && onLikesClick('down'); }}
-            style={{ display: 'flex', alignItems: 'center', gap: 5, background: c.card, borderRadius: 100, padding: '5px 10px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', cursor: 'pointer' }}>
-            <ThumbDownIc s={13} col={CORAL}/>
-            <span style={{ ...ts(13, 700), color: GRAY }}>{restaurant.friendsDisliked} {restaurant.friendsDisliked > 1 ? 'não gostaram' : 'não gostou'}</span>
-          </div>
-        )}
+        <LikesBadge type="up" count={restaurant.friendsLiked}/>
+        <LikesBadge type="down" count={restaurant.friendsDisliked}/>
       </div>
     </div>
   );
