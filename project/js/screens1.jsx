@@ -204,16 +204,33 @@ const SearchScreen = ({ dark, go, back, allLists }) => {
         <SearchInput dark={dark} value={query} onChange={setQuery} autoFocus placeholder="Buscar restaurantes, listas..." />
       </div>
 
-      {/* Filters */}
+      {/* Filters — only when searching */}
+      {query.length > 0 &&
       <div style={{ display: 'flex', gap: 8, padding: '12px 22px', overflowX: 'auto', scrollbarWidth: 'none', flexShrink: 0 }}>
         {filters.map((f) =>
         <Pill key={f} label={f} active={filter === f} dark={dark} onClick={() => setFilter(f)} />
         )}
       </div>
+      }
 
       {/* Results */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '0 22px' }}>
-        {showR && matchR.length > 0 &&
+
+        {/* Empty state: recent searches */}
+        {!query &&
+        <div style={{ padding: '16px 0' }}>
+            <div style={{ ...ts(14), color: GRAY, marginBottom: 14 }}>Buscas recentes</div>
+            {['Fabrique Pães', 'Padarias SP', 'Lamen'].map((q) =>
+          <div key={q} onClick={() => setQuery(q)} style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '10px 0', borderBottom: `1px solid ${c.border}`, cursor: 'pointer' }}>
+                <SearchIc s={16} col={GRAY} />
+                <span style={{ ...ts(15), color: c.textMed }}>{q}</span>
+              </div>
+          )}
+          </div>
+        }
+
+        {/* Search results */}
+        {query && showR && matchR.length > 0 &&
         <div style={{ marginBottom: 24 }}>
             <div style={{ ...ts(16), color: GRAY, marginBottom: 10 }}>Locais</div>
             {matchR.slice(0, 5).map((r) =>
@@ -232,9 +249,9 @@ const SearchScreen = ({ dark, go, back, allLists }) => {
           </div>
         }
 
-        {showL && matchL.length > 0 &&
+        {query && showL && matchL.length > 0 &&
         <div style={{ marginBottom: 24 }}>
-            <div style={{ ...ts(16), color: GRAY, marginBottom: 10 }}>Está nas listas</div>
+            <div style={{ ...ts(16), color: GRAY, marginBottom: 10 }}>Listas</div>
             <div style={{ display: 'flex', gap: 14, overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: 4 }}>
               {matchL.slice(0, 4).map((l) =>
             <div key={l.id} onClick={() => go('list-open', { listId: l.id })}
@@ -250,30 +267,19 @@ const SearchScreen = ({ dark, go, back, allLists }) => {
           </div>
         }
 
-        {showP && matchF.length > 0 &&
+        {query && showP && matchF.length > 0 &&
         <div style={{ marginBottom: 24 }}>
-            <div style={{ ...ts(16), color: GRAY, marginBottom: 10 }}>Seus amigos</div>
+            <div style={{ ...ts(16), color: GRAY, marginBottom: 10 }}>Pessoas</div>
             {matchF.map((f) => <FriendRow key={f.id} friend={f} dark={dark} />)}
           </div>
         }
 
-        {!matchR.length && !matchL.length && !matchF.length && query &&
+        {query && !matchR.length && !matchL.length && !matchF.length &&
         <div style={{ textAlign: 'center', padding: '48px 0', ...ts(15), color: GRAY }}>
             Nenhum resultado para "{query}"
           </div>
         }
 
-        {!query &&
-        <div style={{ padding: '16px 0' }}>
-            <div style={{ ...ts(14), color: GRAY, marginBottom: 14 }}>Buscas recentes</div>
-            {['Fabrique Pães', 'Padarias SP', 'Lamen'].map((q) =>
-          <div key={q} onClick={() => setQuery(q)} style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '10px 0', borderBottom: `1px solid ${c.border}`, cursor: 'pointer' }}>
-                <SearchIc s={16} col={GRAY} />
-                <span style={{ ...ts(15), color: c.textMed }}>{q}</span>
-              </div>
-          )}
-          </div>
-        }
         <div style={{ height: 100 }} />
       </div>
     </div>);

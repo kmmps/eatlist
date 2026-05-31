@@ -6,7 +6,7 @@ const MapScreen = ({ dark, go, allLists }) => {
   const c = getC(dark);
   const [activeFilter, setActiveFilter] = useState('Todos');
   const [selected, setSelected] = useState(null);
-  const filters = ['Todos', 'Padaria', 'Hamburguer', 'Pizza', 'Japonês', 'Café'];
+  const filters = ['Todos', 'Abertos agora', 'Salvos', 'Amigos gostaram'];
 
   const allRestaurants = allLists.flatMap(l =>
     l.restaurants.map(r => ({ ...r, listTitle: l.title, listCategory: l.category }))
@@ -14,19 +14,42 @@ const MapScreen = ({ dark, go, allLists }) => {
 
   const filtered = activeFilter === 'Todos'
     ? allRestaurants
-    : allRestaurants.filter(r => r.listCategory === activeFilter || r.tags.includes(activeFilter));
+    : activeFilter === 'Abertos agora'
+    ? allRestaurants.filter(r => r.isOpen !== false)
+    : activeFilter === 'Salvos'
+    ? allRestaurants.filter(r => r.saved)
+    : activeFilter === 'Amigos gostaram'
+    ? allRestaurants.filter(r => r.friendsLiked > 0)
+    : allRestaurants;
 
   const center = [-23.5505, -46.6633];
 
   return (
     <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}>
-      {/* Filter bar (above map) */}
+      {/* Filter bar + search bar (above map) */}
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 600 }}>
         <StatusBar dark={dark}/>
-        <div style={{ display: 'flex', gap: 8, padding: '8px 16px 12px', overflowX: 'auto', scrollbarWidth: 'none', background: dark ? 'rgba(5,6,21,0.92)' : 'rgba(255,255,255,0.92)', backdropFilter: 'blur(10px)' }}>
-          {filters.map(f => (
-            <Pill key={f} label={f} active={activeFilter === f} dark={dark} onClick={() => setActiveFilter(f)}/>
-          ))}
+        {/* Filter chips */}
+        <div style={{ display: 'flex', gap: 8, padding: '8px 16px 10px', overflowX: 'auto', scrollbarWidth: 'none', background: dark ? 'rgba(5,6,21,0.95)' : 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)' }}>
+          {filters.map(f => {
+            const isActive = activeFilter === f;
+            return (
+              <button key={f} onClick={() => setActiveFilter(f)} style={{
+                height: 36, padding: '0 12px', borderRadius: 8, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+                fontFamily: '"DM Sans", sans-serif', fontSize: 14, fontWeight: 700, letterSpacing: '-0.05em', lineHeight: 1.2,
+                background: isActive ? 'transparent' : (dark ? '#1a1b2e' : '#F4F4F4'),
+                color: isActive ? CORAL : GRAY,
+                border: isActive ? `1.5px solid ${CORAL}` : '1.5px solid transparent',
+              }}>{f}</button>
+            );
+          })}
+        </div>
+        {/* Search bar floating below filters */}
+        <div style={{ padding: '0 16px 12px', background: 'transparent' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: dark ? 'rgba(5,6,21,0.92)' : 'rgba(255,255,255,0.95)', borderRadius: 32, padding: '10px 18px', boxShadow: '0 2px 12px rgba(0,0,0,0.15)', backdropFilter: 'blur(10px)' }}>
+            <SearchIc s={18} col={GRAY}/>
+            <span style={{ fontFamily: '"DM Sans", sans-serif', fontSize: 15, color: '#CCC', letterSpacing: '-0.05em' }}>Buscar no mapa...</span>
+          </div>
         </div>
       </div>
 
@@ -38,6 +61,7 @@ const MapScreen = ({ dark, go, allLists }) => {
           zoom={13}
           markers={filtered}
           onMarkerClick={r => setSelected(r)}
+          activeFilter={activeFilter}
           style={{ height: '100%' }}
         />
       </div>
@@ -294,9 +318,51 @@ const RestaurantScreen = ({ dark, go, back, restaurantId, allLists }) => {
   const allR = allLists.flatMap(l => l.restaurants.map(r => ({ ...r, listTitle: l.title })));
   const restaurant = allR.find(r => r.id === restaurantId) || allR[0];
   const inLists = allLists.filter(l => l.restaurants.some(r => r.id === restaurantId));
+  const friends = window.DATA.friends;
 
   const [liked, setLiked] = useState(null); // null | 'up' | 'down'
-  const [saved, setSaved] = useState(false);
+  const [friendsSheet, setFriendsSheet] = useState(null); // null | 'up' | 'down'
+  const [listSheet, setListSheet] = useState(false);
+  // ids of lists this restaurant has been added to (starts from what's already in data)
+  const [addedToLists, setAddedToLists] = useState(
+    () => new Set(allLists.filter(l => l.restaurants.some(r => r.id === restaurantId)).map(l => l.id))
+  );
+  const [toast, setToast] = useState(null);
+  const toastTimer = useRef(null);
+
+  const toggleList = (listId) => {
+    setAddedToLists(prev => {
+      const next = new Set(prev);
+      const adding = !next.has(listId);
+      adding ? next.add(listId) : next.delete(listId);
+      if (adding) {
+        const listName = allLists.find(l => l.id === listId)?.title;
+        clearTimeout(toastTimer.current);
+        setToast(listName);
+        toastTimer.current = setTimeout(() => setToast(null), 2500);
+      }
+      return next;
+    });
+  };
+  const longPressTimer = useRef(null);
+
+  const startLongPress = (type) => {
+    longPressTimer.current = setTimeout(() => {
+      longPressTimer.current = 'fired';
+      setFriendsSheet(type);
+    }, 500);
+  };
+  const cancelLongPress = () => {
+    if (longPressTimer.current && longPressTimer.current !== 'fired') {
+      clearTimeout(longPressTimer.current);
+    }
+    longPressTimer.current = null;
+  };
+  const handleLikeClick = (type) => {
+    if (longPressTimer.current === 'fired') { longPressTimer.current = null; return; }
+    cancelLongPress();
+    setLiked(v => v === type ? null : type);
+  };
 
   if (!restaurant) return null;
   const mapId = useRef(`rmap-${restaurantId}`);
@@ -332,10 +398,8 @@ const RestaurantScreen = ({ dark, go, back, restaurantId, allLists }) => {
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10 }}>
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                <button onClick={() => setSaved(v => !v)} style={{ width: 34, height: 34, borderRadius: 100, background: saved ? GREEN : CORAL, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  {saved
-                    ? <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    : <PlusIc s={15} col="white"/>}
+                <button onClick={() => setListSheet(true)} style={{ width: 34, height: 34, borderRadius: 100, background: CORAL, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <PlusIc s={15} col="white"/>
                 </button>
                 <span style={{ ...ts(28), color: c.text, lineHeight: 1 }}>{restaurant.name}</span>
               </div>
@@ -356,16 +420,33 @@ const RestaurantScreen = ({ dark, go, back, restaurantId, allLists }) => {
 
           {/* Like/dislike */}
           <div style={{ display: 'flex', gap: 8, marginTop: 14, alignItems: 'center' }}>
-            <button onClick={() => setLiked(v => v === 'up' ? null : 'up')}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 100, border: 'none', cursor: 'pointer', background: liked === 'up' ? GREEN + '25' : c.surf, transition: 'all 0.15s' }}>
-              <ThumbUpIc s={15} col={liked === 'up' ? GREEN : GRAY}/>
-              <span style={{ ...ts(14, 700), color: liked === 'up' ? GREEN : GRAY }}>{restaurant.likes + (liked === 'up' ? 1 : 0)}</span>
-            </button>
-            <button onClick={() => setLiked(v => v === 'down' ? null : 'down')}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 100, border: 'none', cursor: 'pointer', background: liked === 'down' ? CORAL + '20' : c.surf, transition: 'all 0.15s' }}>
-              <ThumbDownIc s={15} col={liked === 'down' ? CORAL : GRAY}/>
-              <span style={{ ...ts(14, 700), color: liked === 'down' ? CORAL : GRAY }}>{restaurant.dislikes + (liked === 'down' ? 1 : 0)}</span>
-            </button>
+            {[{ type: 'up', count: restaurant.likes + (liked === 'up' ? 1 : 0), friendCount: restaurant.friendsLiked, activeCol: GREEN },
+              { type: 'down', count: restaurant.dislikes + (liked === 'down' ? 1 : 0), friendCount: restaurant.friendsDisliked, activeCol: CORAL }
+            ].map(({ type, count, friendCount, activeCol }) => {
+              const isActive = liked === type;
+              const col = isActive ? activeCol : GRAY;
+              const avatars = friends.slice(0, Math.min(friendCount, 3));
+              return (
+                <button key={type}
+                  onPointerDown={() => startLongPress(type)}
+                  onPointerUp={() => handleLikeClick(type)}
+                  onPointerLeave={cancelLongPress}
+                  onContextMenu={e => e.preventDefault()}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 100, border: 'none', cursor: 'pointer', background: isActive ? activeCol + '25' : c.surf, transition: 'all 0.15s', userSelect: 'none' }}>
+                  {type === 'up'
+                    ? <ThumbUpIc s={15} col={col}/>
+                    : <ThumbDownIc s={15} col={col}/>}
+                  <span style={{ ...ts(14, 700), color: col }}>{count}</span>
+                  {friendCount > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      {avatars.map((f, i) => (
+                        <img key={f.id} src={f.avatar} style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover', border: `1.5px solid ${c.bg}`, marginLeft: i === 0 ? 2 : -5, zIndex: avatars.length - i, position: 'relative' }}/>
+                      ))}
+                    </div>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -391,6 +472,115 @@ const RestaurantScreen = ({ dark, go, back, restaurantId, allLists }) => {
         )}
         <div style={{ height: 100 }}/>
       </div>
+
+      {/* Toast */}
+      {toast && (
+        <div style={{ position: 'absolute', bottom: 90, left: 16, right: 16, zIndex: 1000, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
+          <div style={{ background: '#050615', borderRadius: 100, padding: '10px 20px', display: 'flex', alignItems: 'center', gap: 10, boxShadow: '0 4px 20px rgba(0,0,0,0.25)' }}>
+            <svg width="14" height="14" viewBox="0 0 54 54" fill="none">
+              <path d="M22.5503 51.1206C25.9262 50.5146 29.1724 49.3491 32.5099 48.5743C35.2624 47.9351 37.8459 47.0116 40.5451 46.1848C53.2862 42.2843 51.8814 45.5188 40.4911 35.2055C39.514 34.3205 37.6636 33.7213 37.2672 32.244C36.4855 29.3299 42.2864 19.6016 43.594 17.4493C45.52 14.2803 32.1051 6.5915 29.5623 3.954" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M22.1451 50.8673C20.0013 48.2918 17.1909 46.4302 14.689 44.2325C4.40657 35.1995 9.07298 35.1788 13.7174 22.9759C13.8619 22.5951 15.1697 20.4558 15.052 20.0173C14.8624 19.3105 13.5679 19.8497 12.9102 19.5271C8.62132 17.4178 4.88261 14.3768 1.00016 11.7195" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M1.22551 11.702C10.2539 9.19623 20.5497 7.13115 29.3509 3.89591" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M11.2648 38.5271C11.229 39.0895 9.40909 38.4649 9.65205 38.2495C11.5416 36.5749 30.9435 35.4126 36.2561 32.9019" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M13.7258 20.0275C22.3282 18.2312 33.4805 16.5459 42.1384 15.1319" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span style={{ ...ts(14, 700), color: 'white', whiteSpace: 'nowrap' }}>Adicionado a {toast}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Add to list — bottom sheet */}
+      {listSheet && (
+        <div style={{ position: 'absolute', inset: 0, zIndex: 900 }}>
+          <div onClick={() => setListSheet(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }}/>
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: c.bg, borderRadius: '24px 24px 0 0', border: `1px solid ${c.border}`, boxShadow: '0 -4px 40px rgba(0,0,0,0.15)', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px 22px 16px', flexShrink: 0 }}>
+              <span style={{ ...ts(16), color: GRAY }}>Suas listas</span>
+              <button onClick={() => setListSheet(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4 }}>
+                <CloseIc s={20} col={GRAY}/>
+              </button>
+            </div>
+
+            <div style={{ overflowY: 'auto', padding: '0 22px', paddingBottom: 90 }}>
+              {/* Criar nova lista */}
+              <button onClick={() => { setListSheet(false); go('new-list'); }}
+                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: 12, background: 'none', border: `1px solid ${c.border}`, borderRadius: 16, cursor: 'pointer', marginBottom: 16 }}>
+                <div style={{ width: 32, height: 32, background: c.surf, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <ListIc s={16} col={GRAY}/>
+                </div>
+                <span style={{ ...ts(16, 700), color: c.text }}>Criar uma nova lista</span>
+              </button>
+
+              {/* Grid 2 colunas */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                {allLists.map(l => {
+                  const isAdded = addedToLists.has(l.id);
+                  return (
+                    <div key={l.id} onClick={() => toggleList(l.id)} style={{ cursor: 'pointer' }}>
+                      {/* Thumbnail */}
+                      <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', aspectRatio: '1', marginBottom: 8 }}>
+                        <img src={l.img} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', opacity: isAdded ? 0.45 : 1, transition: 'opacity 0.2s' }}/>
+                        {isAdded && <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.25)' }}/>}
+                        {/* Já adicionado — badge coral */}
+                        {isAdded && (
+                          <div style={{ position: 'absolute', bottom: 8, right: 8, width: 32, height: 32, borderRadius: '50%', background: CORAL, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }}>
+                            <svg width="18" height="18" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M22.5503 51.1206C25.9262 50.5146 29.1724 49.3491 32.5099 48.5743C35.2624 47.9351 37.8459 47.0116 40.5451 46.1848C53.2862 42.2843 51.8814 45.5188 40.4911 35.2055C39.514 34.3205 37.6636 33.7213 37.2672 32.244C36.4855 29.3299 42.2864 19.6016 43.594 17.4493C45.52 14.2803 32.1051 6.5915 29.5623 3.954" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M22.1451 50.8673C20.0013 48.2918 17.1909 46.4302 14.689 44.2325C4.40657 35.1995 9.07298 35.1788 13.7174 22.9759C13.8619 22.5951 15.1697 20.4558 15.052 20.0173C14.8624 19.3105 13.5679 19.8497 12.9102 19.5271C8.62132 17.4178 4.88261 14.3768 1.00016 11.7195" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M1.22551 11.702C10.2539 9.19623 20.5497 7.13115 29.3509 3.89591" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M11.2648 38.5271C11.229 39.0895 9.40909 38.4649 9.65205 38.2495C11.5416 36.5749 30.9435 35.4126 36.2561 32.9019" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              <path d="M13.7258 20.0275C22.3282 18.2312 33.4805 16.5459 42.1384 15.1319" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                      <div style={{ ...ts(16), color: c.text, lineHeight: 1.2, marginBottom: 2 }}>{l.title}</div>
+                      <div style={{ ...ts(13), color: GRAY }}>Sua lista</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Quem gostou / não gostou — bottom sheet on long press */}
+      {friendsSheet && (
+        <div style={{ position: 'absolute', inset: 0, zIndex: 900 }}>
+          <div onClick={() => setFriendsSheet(null)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }}/>
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: c.bg, borderRadius: '24px 24px 0 0', padding: '24px 22px 0', boxShadow: '0 -4px 40px rgba(0,0,0,0.15)', border: `1px solid ${c.border}`, maxHeight: '70vh', display: 'flex', flexDirection: 'column' }}>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {friendsSheet === 'up'
+                  ? <ThumbUpIc s={15} col={CORAL}/>
+                  : <ThumbDownIc s={15} col={CORAL}/>}
+                <span style={{ ...ts(16), color: c.text }}>{friendsSheet === 'up' ? 'Quem gostou' : 'Quem não gostou'}</span>
+              </div>
+              <button onClick={() => setFriendsSheet(null)} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4 }}>
+                <CloseIc s={20} col={GRAY}/>
+              </button>
+            </div>
+            {/* Friends list — scrollable, clears nav bar */}
+            <div style={{ overflowY: 'auto', paddingBottom: 90, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {friends.slice(0, friendsSheet === 'up' ? restaurant.friendsLiked : restaurant.friendsDisliked).map(f => (
+                <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 12, background: c.surf, borderRadius: 16 }}>
+                  <img src={f.avatar} style={{ width: 30, height: 30, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}/>
+                  <span style={{ ...ts(16), color: c.text, flex: 1 }}>{f.name}</span>
+                  <button style={{ border: 'none', background: 'white', borderRadius: 8, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                    <UserIc s={16} col={GRAY}/>
+                  </button>
+                </div>
+              ))}
+              {(friendsSheet === 'up' ? restaurant.friendsLiked : restaurant.friendsDisliked) === 0 && (
+                <div style={{ textAlign: 'center', padding: '24px 0', ...ts(15), color: GRAY }}>Nenhum amigo ainda</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

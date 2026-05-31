@@ -3,7 +3,7 @@ const { useState, useEffect, useRef } = React;
 
 // ── Tokens ────────────────────────────────────────────────────────
 const CORAL = '#EB6558';
-const DARK = '#05061 5';
+const DARK = '#050615';
 const GREEN = '#71CC97';
 const GRAY = '#8D9091';
 const LGRAY = '#F4F4F4';
@@ -215,7 +215,7 @@ const RestaurantCard = ({ restaurant, dark, onOpen, onPlusClick, onLikesClick })
 };
 
 // ── LeafletMap ────────────────────────────────────────────────────
-const LeafletMap = ({ dark, center, zoom = 14, markers = [], onMarkerClick, style: mapStyle = {} }) => {
+const LeafletMap = ({ dark, center, zoom = 14, markers = [], onMarkerClick, style: mapStyle = {}, activeFilter = 'Todos' }) => {
   const ref = useRef(null);
   const mapR = useRef(null);
   const tileR = useRef(null);
@@ -231,11 +231,18 @@ const LeafletMap = ({ dark, center, zoom = 14, markers = [], onMarkerClick, styl
     tileR.current = L.tileLayer(tileUrl(dark), { maxZoom: 19, subdomains: 'abcd' }).addTo(map);
 
     markers.forEach((m) => {
+      // saved = coral with checkmark; friendsLiked = dark with heart; default = gray pin
+      const isSaved = m.saved;
+      const isFriend = !isSaved && m.friendsLiked > 0;
+      const bg = isSaved ? CORAL : isFriend ? '#050615' : '#8D9091';
+      const iconSvg = isSaved
+        ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`
+        : isFriend
+        ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`
+        : `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>`;
       const icon = L.divIcon({
         className: '',
-        html: `<div style="width:32px;height:32px;background:${CORAL};border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.35);cursor:pointer;border:0px solid white;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-        </div>`,
+        html: `<div style="width:32px;height:32px;background:${bg};border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.35);cursor:pointer;">${iconSvg}</div>`,
         iconSize: [32, 32], iconAnchor: [16, 16]
       });
       const mk = L.marker([m.lat, m.lng], { icon }).addTo(map);
