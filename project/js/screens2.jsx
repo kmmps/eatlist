@@ -283,39 +283,43 @@ const ListOpenScreen = ({ dark, go, back, listId, allLists }) => {
       {addToListSheet && (
         <div style={{ position: 'absolute', inset: 0, zIndex: 800 }}>
           <div onClick={() => setAddToListSheet(null)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }}/>
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: c.bg, borderRadius: '28px 28px 0 0', padding: '12px 22px 40px', boxShadow: '0 -4px 40px rgba(0,0,0,0.15)' }}>
-            <div style={{ width: 40, height: 4, background: GRAY + '50', borderRadius: 2, margin: '0 auto 20px' }}/>
-            <div style={{ ...ts(18, 700), color: c.text, marginBottom: 4 }}>Adicionar à lista</div>
-            <div style={{ ...ts(14), color: GRAY, marginBottom: 20 }}>{addToListSheet.name}</div>
-
-            {/* Existing lists */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
-              {allLists.map(l => {
-                const alreadyIn = l.restaurants.some(r => r.id === addToListSheet.id);
-                return (
-                  <div key={l.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: c.surf, borderRadius: 14, cursor: 'pointer' }}
-                    onClick={() => !alreadyIn && setAddToListSheet(null)}>
-                    <div style={{ width: 40, height: 40, borderRadius: 10, overflow: 'hidden', flexShrink: 0 }}>
-                      <img src={l.img} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ ...ts(15, 500), color: c.text }}>{l.title}</div>
-                      <div style={{ ...ts(12), color: GRAY }}>{l.restaurants.length} restaurantes</div>
-                    </div>
-                    {alreadyIn
-                      ? <PlusIc s={16} col={GREEN}/>
-                      : <PlusIc s={16} col={GRAY}/>}
-                  </div>
-                );
-              })}
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: c.bg, borderRadius: '28px 28px 0 0', boxShadow: '0 -4px 40px rgba(0,0,0,0.15)', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '12px 22px 0', flexShrink: 0 }}>
+              <div style={{ width: 40, height: 4, background: GRAY + '50', borderRadius: 2, margin: '0 auto 20px' }}/>
+              <div style={{ ...ts(18, 700), color: c.text, marginBottom: 4 }}>Adicionar à lista</div>
+              <div style={{ ...ts(14), color: GRAY, marginBottom: 20 }}>{addToListSheet.name}</div>
             </div>
 
-            {/* Create new */}
-            <button onClick={() => { setAddToListSheet(null); go('new-list'); }}
-              style={{ width: '100%', height: 48, border: `2px dashed ${c.border}`, borderRadius: 14, background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-              <PlusIc s={16} col={GRAY}/>
-              <span style={{ ...ts(14, 600), color: GRAY }}>Criar nova lista</span>
-            </button>
+            <div style={{ overflowY: 'auto', padding: '0 22px', paddingBottom: 90 }}>
+              {/* Existing lists */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+                {allLists.map(l => {
+                  const alreadyIn = l.restaurants.some(r => r.id === addToListSheet.id);
+                  return (
+                    <div key={l.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: c.surf, borderRadius: 14, cursor: 'pointer' }}
+                      onClick={() => !alreadyIn && setAddToListSheet(null)}>
+                      <div style={{ width: 40, height: 40, borderRadius: 10, overflow: 'hidden', flexShrink: 0 }}>
+                        <img src={l.img} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ ...ts(15, 500), color: c.text }}>{l.title}</div>
+                        <div style={{ ...ts(12), color: GRAY }}>{l.restaurants.length} restaurantes</div>
+                      </div>
+                      {alreadyIn
+                        ? <span style={{ ...ts(12, 700), color: GREEN }}>✓ Adicionado</span>
+                        : <PlusIc s={16} col={GRAY}/>}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Create new */}
+              <button onClick={() => { setAddToListSheet(null); go('new-list'); }}
+                style={{ width: '100%', height: 48, border: `2px dashed ${c.border}`, borderRadius: 14, background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <PlusIc s={16} col={GRAY}/>
+                <span style={{ ...ts(14, 600), color: GRAY }}>Criar nova lista</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
