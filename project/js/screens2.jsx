@@ -208,27 +208,20 @@ const ListOpenScreen = ({ dark, go, back, listId, allLists }) => {
             <span style={{ background: c.surf, borderRadius: 100, padding: '7px 14px', ...ts(13, 700), color: GRAY }}>
               {list.followers + (following ? 1 : 0)} seguidores
             </span>
-            {/* Mutual followers */}
+            {/* Mutual followers — avatars only */}
             {(() => {
-              const mutuals = friends.slice(0, 2);
-              const count = mutuals.length;
-              if (count === 0) return null;
-              const label = count === 1
-                ? `${mutuals[0].name.split(' ')[0]} segue`
-                : `${mutuals[0].name.split(' ')[0]} e mais ${count - 1} amigo${count > 2 ? 's' : ''} seguem`;
+              const mutuals = friends.slice(0, 3);
+              if (mutuals.length === 0) return null;
               return (
                 <div
                   onPointerDown={startFollowLongPress}
                   onPointerUp={cancelFollowLongPress}
                   onPointerLeave={cancelFollowLongPress}
                   onContextMenu={e => e.preventDefault()}
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, background: c.surf, borderRadius: 100, padding: '7px 12px 7px 6px', cursor: 'pointer', userSelect: 'none' }}>
-                  <div style={{ display: 'flex' }}>
-                    {mutuals.map((f, i) => (
-                      <img key={f.id} src={f.avatar} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', border: `2px solid ${c.bg}`, marginLeft: i > 0 ? -6 : 0 }}/>
-                    ))}
-                  </div>
-                  <span style={{ ...ts(12, 600), color: GRAY }}>{label}</span>
+                  style={{ display: 'flex', alignItems: 'center', background: c.surf, borderRadius: 100, padding: '5px 8px', cursor: 'pointer', userSelect: 'none' }}>
+                  {mutuals.map((f, i) => (
+                    <img key={f.id} src={f.avatar} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', border: `2px solid ${c.bg}`, marginLeft: i > 0 ? -8 : 0 }}/>
+                  ))}
                 </div>
               );
             })()}
