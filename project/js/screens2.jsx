@@ -283,14 +283,14 @@ const ListOpenScreen = ({ dark, go, back, listId, allLists }) => {
       {addToListSheet && (
         <div style={{ position: 'absolute', inset: 0, zIndex: 800 }}>
           <div onClick={() => setAddToListSheet(null)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }}/>
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: c.bg, borderRadius: '28px 28px 0 0', boxShadow: '0 -4px 40px rgba(0,0,0,0.15)', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ position: 'absolute', top: 60, left: 0, right: 0, bottom: 0, background: c.bg, borderRadius: '28px 28px 0 0', boxShadow: '0 -4px 40px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column' }}>
             <div style={{ padding: '12px 22px 0', flexShrink: 0 }}>
               <div style={{ width: 40, height: 4, background: GRAY + '50', borderRadius: 2, margin: '0 auto 20px' }}/>
               <div style={{ ...ts(18, 700), color: c.text, marginBottom: 4 }}>Adicionar à lista</div>
               <div style={{ ...ts(14), color: GRAY, marginBottom: 20 }}>{addToListSheet.name}</div>
             </div>
 
-            <div style={{ overflowY: 'auto', padding: '0 22px', paddingBottom: 90 }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '0 22px', paddingBottom: 90 }}>
               {/* Existing lists */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
                 {allLists.map(l => {
@@ -306,7 +306,7 @@ const ListOpenScreen = ({ dark, go, back, listId, allLists }) => {
                         <div style={{ ...ts(12), color: GRAY }}>{l.restaurants.length} restaurantes</div>
                       </div>
                       {alreadyIn
-                        ? <span style={{ ...ts(12, 700), color: GREEN }}>✓ Adicionado</span>
+                        ? <span style={{ ...ts(12, 700), color: GREEN }}>Adicionado</span>
                         : <PlusIc s={16} col={GRAY}/>}
                     </div>
                   );
