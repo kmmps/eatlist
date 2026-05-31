@@ -200,7 +200,7 @@ const RestaurantCard = ({ restaurant, dark, onOpen, onPlusClick, onLikesClick })
         onPointerUp={e => { e.stopPropagation(); cancelLP(); }}
         onPointerLeave={cancelLP}
         onContextMenu={e => e.preventDefault()}
-        style={{ display: 'flex', alignItems: 'center', gap: 5, background: c.surf, borderRadius: 100, padding: '5px 10px', cursor: 'pointer', userSelect: 'none' }}>
+        style={{ display: 'flex', alignItems: 'center', gap: 5, background: c.bg, borderRadius: 100, padding: '5px 10px', cursor: 'pointer', userSelect: 'none' }}>
         {type === 'up' ? <ThumbUpIc s={13} col={col}/> : <ThumbDownIc s={13} col={col}/>}
         <span style={{ ...ts(13, 700), color: GRAY }}>{count}</span>
         {avatars.length > 0 && (
