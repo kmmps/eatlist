@@ -215,10 +215,11 @@ const ListOpenScreen = ({ dark, go, back, listId, allLists }) => {
                   onPointerUp={cancelFollowLongPress}
                   onPointerLeave={cancelFollowLongPress}
                   onContextMenu={e => e.preventDefault()}
-                  style={{ display: 'flex', alignItems: 'center', background: c.surf, borderRadius: 100, padding: '5px 8px', cursor: 'pointer', userSelect: 'none' }}>
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, background: c.surf, borderRadius: 100, padding: '5px 10px 5px 8px', cursor: 'pointer', userSelect: 'none' }}>
                   {mutuals.map((f, i) => (
                     <img key={f.id} src={f.avatar} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', border: `2px solid ${c.bg}`, marginLeft: i > 0 ? -8 : 0 }}/>
                   ))}
+                  <span style={{ ...ts(12, 600), color: GRAY }}>{mutuals.length === 1 ? 'segue' : 'seguem'}</span>
                 </div>
               );
             })()}
