@@ -517,7 +517,7 @@ const RestaurantScreen = ({ dark, go, back, restaurantId, allLists }) => {
                 {allLists.map(l => {
                   const isAdded = addedToLists.has(l.id);
                   return (
-                    <div key={l.id} onClick={() => toggleList(l.id)} style={{ cursor: 'pointer' }}>
+                    <div key={l.id} onClick={() => isAdded ? (setListSheet(false), go('list-open', { listId: l.id })) : toggleList(l.id)} style={{ cursor: 'pointer' }}>
                       {/* Thumbnail */}
                       <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', aspectRatio: '1', marginBottom: 8 }}>
                         <img src={l.img} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', opacity: isAdded ? 0.45 : 1, transition: 'opacity 0.2s' }}/>
