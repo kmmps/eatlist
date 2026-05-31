@@ -194,11 +194,8 @@ const ListOpenScreen = ({ dark, go, back, listId, allLists }) => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
             <div style={{ flex: 1 }}>
               {/* Title + map icon inline */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+              <div style={{ marginBottom: 6 }}>
                 <div style={{ ...ts(30), color: c.text, lineHeight: 1 }}>{list.title}</div>
-                <button onClick={() => go('map')} style={{ width: 30, height: 30, border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <MapIc s={18} col={GRAY}/>
-                </button>
               </div>
               <div style={{ ...ts(14, 700), color: GRAY }}>Lista de {list.author}</div>
             </div>
