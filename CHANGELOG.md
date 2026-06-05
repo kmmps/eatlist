@@ -36,15 +36,42 @@ Copie o bloco abaixo e preencha ao final de cada batch de trabalho:
 
 ## Histórico
 
-*(Nenhuma sessão registrada ainda. O projeto está em estado inicial — audit concluído, plano criado, implementação não iniciada.)*
+*(Nenhuma sessão registrada ainda. Quando finalizar tasks no Jira, reporte aqui no Cowork e o changelog será atualizado.)*
+
+---
+
+## Sprint 1 — Core Save Flow (planejada)
+
+**Goal:** Corrigir o fluxo de salvar restaurante e eliminar botões quebrados — app pronto para o primeiro teste com usuário real.  
+**Issues Jira:** SCRUM-5, 6, 13, 15, 18, 7, 10, 8, 9, 11, 12  
+**Status:** 🔲 Não iniciada
+
+### Onda 1 — Mudanças de uma linha
+- 🔲 SCRUM-5 · [1.2] Raise login tagline opacity
+- 🔲 SCRUM-6 · [1.1] Bold display-sized titles
+- 🔲 SCRUM-13 · [1.9] Rename "Explorar" section
+
+### Onda 2 — Dead buttons
+- 🔲 SCRUM-15 · [1.11] Wire "Ver no Maps"
+- 🔲 SCRUM-18 · [1.14] Wire Share button
+
+### Onda 3 — Fluxos quebrados
+- 🔲 SCRUM-7 · [1.7] Label the "+" save button
+- 🔲 SCRUM-10 · [1.5] Redirect after list creation
+- 🔲 SCRUM-8 · [1.3] Form validation on Register
+
+### Onda 4 — Maior complexidade (stretch goal)
+- 🔲 SCRUM-9 · [1.4] Fix map search bar
+- 🔲 SCRUM-11 · [1.6] Long-press → regular tap
+- 🔲 SCRUM-12 · [1.8] Home "+" → action sheet
 
 ---
 
 ## Estado atual do backlog
 
 **Última atualização:** 2026-06-05  
-**Fase atual:** Pré-implementação  
-**Próximo batch sugerido:** Tasks 1.2, 1.1, 1.7 (ver "Suggested Execution Order" no implementation plan)
+**Fase atual:** Sprint 1 planejada, implementação não iniciada  
+**Próximo passo:** Iniciar pela Onda 1 — SCRUM-5, 6, 13
 
 | Fase | Total | Concluídas | Restantes |
 | --- | --- | --- | --- |
