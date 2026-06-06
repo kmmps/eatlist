@@ -1340,15 +1340,17 @@ The map screen shows restaurants from the user's own lists and from friends' lis
 
 | State | Visual | When |
 |---|---|---|
-| Meu (mine) | Filled ink circle `●` | Restaurant is in my lists or I reacted to it |
-| Amigos (friends') | Outline ink circle `○` | Restaurant is in a friend's list or a friend reacted to it |
+| Gostei | Filled ink circle `●` + heart icon (cream) | Someone liked this place — me or a friend |
+| Salvo | Outline ink circle `○` + bookmark icon (ink) | In a list but no positive reaction yet |
 | Selecionado (active) | Filled ink circle + cream ring `◉` | User tapped this pin |
 | Cluster | Filled ink circle + count | Multiple restaurants at the same location |
 
 **Rules:**
 - All pins use `--color-ink` exclusively — cobalt is never used for map pins.
-- Differentiation is by fill (filled vs outline), not by colour.
+- Differentiation is by fill (liked = filled, saved = outline), not by colour.
 - Selected pin is the same ink colour but with a `3px --color-cream` ring around it.
+- **Thumbs down (não gostei) never appears on the map** — negative reactions are private and only visible on the restaurant detail screen.
+- Mine vs friends is handled by filter chips (Todos / Salvos / Amigos gostaram), not by pin style.
 - Cluster pins show a number inside the circle.
 
 ### CSS
@@ -1365,24 +1367,24 @@ The map screen shows restaurants from the user's own lists and from friends' lis
   transition: transform var(--duration-fast) var(--ease-out);
 }
 
-/* Mine — filled */
-.el-map-pin--mine {
+/* Liked — filled ink, heart icon */
+.el-map-pin--liked {
   background: var(--color-ink);
   border: 2px solid var(--color-ink);
 }
 
-.el-map-pin--mine svg {
-  color: var(--color-cream);
+.el-map-pin--liked svg {
+  color: var(--color-cream);   /* cream heart icon */
 }
 
-/* Friends — outline */
-.el-map-pin--friends {
-  background: var(--color-bg-page);   /* cream */
+/* Saved — outline ink, bookmark icon */
+.el-map-pin--saved {
+  background: var(--color-bg-page);   /* cream fill */
   border: 2px solid var(--color-ink);
 }
 
-.el-map-pin--friends svg {
-  color: var(--color-ink);
+.el-map-pin--saved svg {
+  color: var(--color-ink);   /* ink bookmark icon */
 }
 
 /* Selected */
@@ -1408,8 +1410,9 @@ The map has exactly 3 filter chips — no more:
 The active chip uses the standard `tag--active` style (cobalt fill, cream text).
 
 ### Acceptance criteria
-- [ ] Mine pins: filled ink, cream icon
-- [ ] Friends pins: outline ink, ink icon
+- [ ] Liked pins: filled ink, cream heart icon
+- [ ] Saved pins: outline ink, ink bookmark icon
+- [ ] Thumbs down places do NOT appear as pins — never
 - [ ] Selected pin has cream outline ring, scale 1.15
 - [ ] Zero cobalt on any pin in any state
 - [ ] Exactly 3 filter chips: Todos, Salvos, Amigos gostaram
