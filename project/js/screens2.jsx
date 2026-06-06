@@ -475,7 +475,7 @@ const RestaurantScreen = ({ dark, go, back, restaurantId, allLists }) => {
 
           {/* Address */}
           <div style={{ ...ts(13), color: GRAY, marginBottom: 4 }}>{restaurant.address}</div>
-          <span style={{ ...ts(12, 700), color: GRAY, cursor: 'pointer', borderBottom: `1px solid ${GRAY}` }}>Ver no Maps</span>
+          <span onClick={() => window.open('https://maps.google.com/?q=' + encodeURIComponent(restaurant.address), '_blank')} style={{ ...ts(12, 700), color: CORAL, cursor: 'pointer' }}>Abrir no Google Maps</span>
 
           {/* Like/dislike */}
           <div style={{ display: 'flex', gap: 8, marginTop: 14, alignItems: 'center' }}>
