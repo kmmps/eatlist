@@ -1426,8 +1426,8 @@ Users can react to a restaurant to record whether they liked it or not. Reaction
 
 | State | Icon | Label | Colour |
 |---|---|---|---|
-| Gostei | Heart (filled) `♥` | count | `--color-ink` |
-| Não gostei | X mark `✕` | count | `--color-ink` |
+| Gostei | Thumbs up (outline line icon) | count | `--color-ink` |
+| Não gostei | Thumbs down (outline line icon) | count | `--color-ink` |
 | Not yet reacted | Both icons outline | — | `--color-text-secondary` |
 
 ### HTML structure
@@ -1435,11 +1435,11 @@ Users can react to a restaurant to record whether they liked it or not. Reaction
 ```html
 <div class="el-reaction">
   <button class="el-reaction__btn el-reaction__btn--like" aria-label="Gostei" aria-pressed="false">
-    <svg class="el-reaction__icon" aria-hidden="true"><!-- heart outline --></svg>
+    <svg class="el-reaction__icon" aria-hidden="true"><!-- thumbs up, outline line style --></svg>
     <span class="el-reaction__count">6</span>
   </button>
   <button class="el-reaction__btn el-reaction__btn--dislike" aria-label="Não gostei" aria-pressed="false">
-    <svg class="el-reaction__icon" aria-hidden="true"><!-- x --></svg>
+    <svg class="el-reaction__icon" aria-hidden="true"><!-- thumbs down, outline line style --></svg>
     <span class="el-reaction__count">1</span>
   </button>
 </div>
@@ -1493,7 +1493,7 @@ Users can react to a restaurant to record whether they liked it or not. Reaction
 ```
 
 ### Rules
-- The heart icon is **always filled** when the user has reacted positively — never outline when active.
+- Icons are **outline line style** — never emoji-style, never filled solid. Use Lucide, Phosphor, or equivalent icon library at stroke-width 1.5.
 - Reactions use `--color-ink` for the active state — never cobalt.
 - The reaction component is shown on: restaurant detail screen, restaurant card in list (compact version, count only).
 - A user can only have one reaction per restaurant — selecting one deselects the other.
@@ -1503,7 +1503,7 @@ Users can react to a restaurant to record whether they liked it or not. Reaction
 - [ ] Heart fills ink when user has reacted positively
 - [ ] X mark fills ink when user has reacted negatively
 - [ ] Selecting one reaction deselects the other
-- [ ] No thumbs up / thumbs down icons anywhere in the app — only heart and X
+- [ ] Icons are outline line style (stroke-width 1.5) — never emoji or filled solid
 - [ ] Cobalt is never used for reaction icons or states
 
 ---
