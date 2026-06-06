@@ -10,16 +10,13 @@ const SplashScreen = ({ onDone }) => {
     return () => {clearTimeout(t1);clearTimeout(t2);};
   }, []);
   return (
-    <div onClick={onDone} style={{ position: 'absolute', inset: 0, background: CORAL, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, opacity: fade ? 0 : 1, transition: 'opacity 0.4s ease', cursor: 'pointer' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-        <EatLogo color="white" height={42} />
-        <ListLogo color="white" height={32} />
-      </div>
+    <div onClick={onDone} style={{ position: 'absolute', inset: 0, background: DARK, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, opacity: fade ? 0 : 1, transition: 'opacity 0.4s ease', cursor: 'pointer' }}>
+      <AppLogomark color="white" size={56} />
+      <span style={{ ...ts(22, 600), color: 'white', letterSpacing: '-0.03em' }}>eatlist</span>
       <div style={{ position: 'absolute', bottom: 48 }}>
-        <div style={{ width: 48, height: 4, background: 'rgba(255,255,255,0.4)', borderRadius: 2 }} />
+        <div style={{ width: 36, height: 4, background: 'rgba(255,255,255,0.25)', borderRadius: 2 }} />
       </div>
     </div>);
-
 };
 
 // ── LoginScreen ───────────────────────────────────────────────────
@@ -29,71 +26,77 @@ const LoginScreen = ({ onLogin, onRegister }) => {
   const [showPass, setShowPass] = useState(false);
   const [tab, setTab] = useState('login'); // 'login' | 'register'
 
+  const inputStyle = {
+    width: '100%', height: 50,
+    background: '#F2F2F7',
+    border: 'none', borderRadius: 14,
+    padding: '0 16px',
+    ...ts(16), color: DARK,
+    outline: 'none', caretColor: CORAL,
+    boxSizing: 'border-box',
+  };
+
   return (
     <div style={{ position: 'absolute', inset: 0, background: DARK, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       {/* Top: logo area */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBottom: 16 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-          <EatLogo color="white" height={40} />
-          <ListLogo color="white" height={30} />
-        </div>
-        <div style={{ marginTop: 16, ...ts(14), color: 'rgba(255,255,255,0.72)', letterSpacing: '-0.02em' }}>playlists de restaurantes</div>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, paddingBottom: 8 }}>
+        <AppLogomark color="white" size={52} />
+        <span style={{ ...ts(24, 600), color: 'white', letterSpacing: '-0.03em' }}>eatlist</span>
+        <span style={{ ...ts(14), color: 'rgba(255,255,255,0.45)', letterSpacing: '-0.01em', marginTop: -4 }}>playlists de restaurantes</span>
       </div>
 
       {/* Bottom: white sheet */}
-      <div style={{ background: '#fff', borderRadius: '32px 32px 0 0', padding: '28px 24px 40px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ background: '#fff', borderRadius: '28px 28px 0 0', padding: '24px 22px 40px', display: 'flex', flexDirection: 'column', gap: 16 }}>
         {/* Tab switcher */}
-        <div style={{ display: 'flex', background: LGRAY, borderRadius: 100, padding: 4, gap: 4 }}>
+        <div style={{ display: 'flex', background: '#EFEFEF', borderRadius: 12, padding: 3, gap: 3 }}>
           {['login', 'register'].map((t) =>
-          <button key={t} onClick={() => setTab(t)} style={{ flex: 1, height: 34, borderRadius: 100, border: 'none', cursor: 'pointer', background: tab === t ? '#fff' : 'transparent', boxShadow: tab === t ? '0 1px 4px rgba(0,0,0,0.12)' : 'none', ...ts(14, 600), color: tab === t ? DARK : GRAY, transition: 'all 0.2s' }}>
+            <button key={t} onClick={() => setTab(t)} style={{ flex: 1, height: 36, borderRadius: 9, border: 'none', cursor: 'pointer', background: tab === t ? '#fff' : 'transparent', boxShadow: tab === t ? '0 1px 3px rgba(0,0,0,0.1)' : 'none', ...ts(14, tab === t ? 600 : 400), color: tab === t ? DARK : GRAY, transition: 'all 0.18s' }}>
               {t === 'login' ? 'Entrar' : 'Criar conta'}
             </button>
           )}
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {tab === 'register' &&
-          <input placeholder="Seu nome" style={{ width: '100%', height: 44, background: LGRAY, border: 'none', borderRadius: 12, padding: '0 14px', ...ts(15), outline: 'none', caretColor: CORAL }} />
+            <input placeholder="Seu nome" style={inputStyle} />
           }
-          <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="E-mail" type="email"
-          style={{ width: '100%', height: 44, background: LGRAY, border: 'none', borderRadius: 12, padding: '0 14px', ...ts(15), outline: 'none', caretColor: CORAL }} />
+          <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="E-mail" type="email" style={inputStyle} />
           <div style={{ position: 'relative' }}>
             <input value={pass} onChange={(e) => setPass(e.target.value)} placeholder="Senha" type={showPass ? 'text' : 'password'}
-            style={{ width: '100%', height: 44, background: LGRAY, border: 'none', borderRadius: 12, padding: '0 44px 0 14px', ...ts(15), outline: 'none', caretColor: CORAL }} />
-            <button onClick={() => setShowPass((v) => !v)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'none', cursor: 'pointer', padding: 4 }}>
+              style={{ ...inputStyle, paddingRight: 48 }} />
+            <button onClick={() => setShowPass((v) => !v)} style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'none', cursor: 'pointer', padding: 4, color: GRAY }}>
               <EyeIc s={18} col={GRAY} />
             </button>
           </div>
           {tab === 'login' &&
-          <div style={{ textAlign: 'right' }}>
+            <div style={{ textAlign: 'right', marginTop: -4 }}>
               <span style={{ ...ts(13), color: CORAL, cursor: 'pointer' }}>Esqueci a senha</span>
             </div>
           }
         </div>
 
-        <button onClick={onLogin} style={{ width: '100%', height: 48, background: CORAL, border: 'none', borderRadius: 14, cursor: 'pointer', ...ts(16, 700), color: 'white' }}>
+        <button onClick={onLogin} style={{ width: '100%', height: 50, background: DARK, border: 'none', borderRadius: 14, cursor: 'pointer', ...ts(16, 600), color: 'white', letterSpacing: '-0.02em' }}>
           {tab === 'login' ? 'Entrar' : 'Criar conta'}
         </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ flex: 1, height: 1, background: '#EEEEEE' }} />
-          <span style={{ ...ts(13), color: GRAY }}>ou continue com</span>
-          <div style={{ flex: 1, height: 1, background: '#EEEEEE' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ flex: 1, height: 1, background: '#E5E5EA' }} />
+          <span style={{ ...ts(12), color: '#AEAEB2' }}>ou continue com</span>
+          <div style={{ flex: 1, height: 1, background: '#E5E5EA' }} />
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', gap: 10 }}>
           {[
-          { icon: <GoogleIc s={20} />, label: 'Continuar com Google' },
-          { icon: <InstagramIc s={20} />, label: 'Continuar com Instagram' }].
-          map(({ icon, label }) =>
-          <button key={label} onClick={onLogin} style={{ width: '100%', height: 50, background: LGRAY, border: 'none', borderRadius: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, ...ts(15, 500), color: DARK }}>
+            { icon: <GoogleIc s={20} />, label: 'Google' },
+            { icon: <InstagramIc s={20} />, label: 'Instagram' }
+          ].map(({ icon, label }) =>
+            <button key={label} onClick={onLogin} style={{ flex: 1, height: 50, background: '#F2F2F7', border: 'none', borderRadius: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, ...ts(15, 500), color: DARK }}>
               {icon}{label}
             </button>
           )}
         </div>
       </div>
     </div>);
-
 };
 
 // ── HomeScreen ────────────────────────────────────────────────────
@@ -370,7 +373,7 @@ const NewListScreen = ({ dark, go, back }) => {
             value={desc} onChange={e => setDesc(e.target.value)}
             placeholder="Conte o que tem nessa lista..."
             rows={3}
-            style={{ width: '100%', background: c.surf, border: 'none', borderRadius: 14, padding: '12px 16px', ...ts(15), color: c.text, outline: 'none', caretColor: CORAL, resize: 'none', fontFamily: "'DM Sans', sans-serif", lineHeight: 1.5 }}
+            style={{ width: '100%', background: c.surf, border: 'none', borderRadius: 14, padding: '12px 16px', ...ts(15), color: c.text, outline: 'none', caretColor: CORAL, resize: 'none', lineHeight: 1.5 }}
           />
         </div>
 
