@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eatlist — Product Foundations 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --color-ink:            #050615;
+    --color-cream:          #F4EFE6;
+    --color-surface:        #FFFFFF;
+    --color-surface-muted:  #F0EBE1;
+    --color-accent:         #1D38C0;
+    --color-accent-muted:   #E8ECF9;
+    --color-text-secondary: #7A7470;
+    --color-border:         #E0D9CF;
+    --color-destructive:    #B5362A;
+    --color-bg-page:        var(--color-cream);
+    --color-bg-card:        var(--color-surface);
+    --color-text-primary:   var(--color-ink);
+    --color-text-muted:     var(--color-text-secondary);
+    --color-interactive:    var(--color-accent);
+    --color-focus-ring:     var(--color-ink);
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-ui:      'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --text-xs:      11px;
+    --text-sm:      13px;
+    --text-base:    15px;
+    --text-md:      17px;
+    --text-lg:      20px;
+    --text-xl:      24px;
+    --text-2xl:     32px;
+    --text-3xl:     40px;
+    --text-display: 56px;
+    --space-1:  4px; --space-2:  8px;  --space-3:  12px; --space-4:  16px;
+    --space-5:  20px;--space-6:  24px; --space-8:  32px; --space-10: 40px;
+    --space-12: 48px;--space-16: 64px; --space-20: 80px; --space-24: 96px;
+    --radius-none: 0px; --radius-sm: 4px; --radius-md: 8px;
+    --radius-lg: 12px;  --radius-xl: 16px; --radius-pill: 9999px;
+    --duration-base: 250ms;
+    --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1.0);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-ui);
+    font-size: var(--text-base);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Layout ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    border-right: 1px solid var(--color-border);
+    background: var(--color-surface);
+    padding: var(--space-8) 0;
+    scrollbar-width: none;
+  }
+  .sidebar::-webkit-scrollbar { display: none; }
+
+  .sidebar-logo {
+    padding: 0 var(--space-6) var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-4);
+  }
+
+  .sidebar-meta {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    margin-top: var(--space-2);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .sidebar-nav {
+    list-style: none;
+    padding: var(--space-2) 0;
+  }
+
+  .sidebar-nav a {
+    display: block;
+    padding: var(--space-2) var(--space-6);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color var(--duration-base) var(--ease-out),
+                background var(--duration-base) var(--ease-out);
+    border-left: 2px solid transparent;
+    line-height: 1.4;
+  }
+
+  .sidebar-nav a:hover {
+    color: var(--color-ink);
+    background: var(--color-surface-muted);
+  }
+
+  .sidebar-nav a.active {
+    color: var(--color-accent);
+    border-left-color: var(--color-accent);
+    font-weight: 500;
+  }
+
+  .nav-section-label {
+    padding: var(--space-4) var(--space-6) var(--space-1);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-border);
+  }
+
+  /* ── Main content ── */
+  .main {
+    max-width: 800px;
+    padding: var(--space-16) var(--space-12);
+  }
+
+  /* ── Page header ── */
+  .page-header {
+    margin-bottom: var(--space-16);
+    padding-bottom: var(--space-10);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .page-header-eyebrow {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-3);
+  }
+
+  .page-header h1 {
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-4);
+  }
+
+  .page-header-lead {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-style: italic;
+    color: var(--color-text-secondary);
+    font-weight: 300;
+  }
+
+  /* ── Section ── */
+  .section {
+    padding: var(--space-12) 0;
+    border-bottom: 1px solid var(--color-border);
+    scroll-margin-top: var(--space-8);
+  }
+
+  .section:last-child { border-bottom: none; }
+
+  .section-number {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-2);
+  }
+
+  .section h2 {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 300;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-bottom: var(--space-6);
+  }
+
+  .section h3 {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin: var(--space-8) 0 var(--space-3);
+  }
+
+  .section p {
+    margin-bottom: var(--space-4);
+    max-width: 62ch;
+  }
+
+  .section p:last-child { margin-bottom: 0; }
+
+  .section strong { font-weight: 600; }
+
+  /* ── Principle block ── */
+  .principle {
+    border-left: 2px solid var(--color-accent);
+    padding: var(--space-3) var(--space-5);
+    margin: var(--space-6) 0;
+    background: var(--color-accent-muted);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+
+  .principle p {
+    font-size: var(--text-base);
+    color: var(--color-ink);
+    margin-bottom: var(--space-1);
+  }
+
+  .principle p:last-child { margin-bottom: 0; }
+
+  .principle strong {
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+
+  /* ── Colour swatches ── */
+  .swatch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: var(--space-3);
+    margin: var(--space-6) 0;
+  }
+
+  .swatch {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+  }
+
+  .swatch-color {
+    height: 64px;
+    width: 100%;
+  }
+
+  .swatch-info {
+    padding: var(--space-3);
+    background: var(--color-surface);
+  }
+
+  .swatch-name {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 2px;
+  }
+
+  .swatch-hex {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  .swatch-token {
+    font-size: 10px;
+    color: var(--color-text-secondary);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    margin-top: 2px;
+  }
+
+  /* ── Type specimens ── */
+  .type-specimen {
+    margin: var(--space-6) 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .type-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-6);
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .type-row:last-child { border-bottom: none; }
+
+  .type-meta {
+    width: 120px;
+    flex-shrink: 0;
+  }
+
+  .type-meta-size {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  .type-meta-token {
+    font-size: 10px;
+    color: var(--color-border);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    margin-top: 2px;
+  }
+
+  .type-example {
+    flex: 1;
+    color: var(--color-ink);
+  }
+
+  /* ── Spacing scale ── */
+  .spacing-scale {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: var(--space-6) 0;
+  }
+
+  .spacing-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .spacing-bar-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .spacing-bar {
+    height: 8px;
+    background: var(--color-accent);
+    border-radius: var(--radius-sm);
+    opacity: 0.7;
+  }
+
+  .spacing-label {
+    width: 80px;
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  .spacing-value {
+    width: 40px;
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    text-align: right;
+  }
+
+  /* ── Radius display ── */
+  .radius-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin: var(--space-6) 0;
+  }
+
+  .radius-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .radius-box {
+    width: 64px;
+    height: 64px;
+    background: var(--color-accent-muted);
+    border: 2px solid var(--color-accent);
+  }
+
+  .radius-label {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    text-align: center;
+  }
+
+  /* ── Code block ── */
+  pre {
+    background: var(--color-ink);
+    color: #E8ECF9;
+    padding: var(--space-6);
+    border-radius: var(--radius-md);
+    font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+    font-size: var(--text-xs);
+    line-height: 1.7;
+    overflow-x: auto;
+    margin: var(--space-6) 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-accent-muted) transparent;
+  }
+
+  code {
+    font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+    font-size: 0.9em;
+    background: var(--color-surface-muted);
+    padding: 2px 5px;
+    border-radius: var(--radius-sm);
+    color: var(--color-accent);
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  /* ── Table ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--space-6) 0;
+    font-size: var(--text-sm);
+  }
+
+  th {
+    text-align: left;
+    padding: var(--space-2) var(--space-4);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  td {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  td code { font-size: var(--text-xs); }
+
+  /* ── Do / Don't ── */
+  .do-dont {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin: var(--space-6) 0;
+  }
+
+  .do-block, .dont-block {
+    padding: var(--space-5);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+  }
+
+  .do-block { background: #F0F5F0; border-color: #B8D4B8; }
+  .dont-block { background: #FAF0EE; border-color: #E8C4BC; }
+
+  .do-label, .dont-label {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-3);
+  }
+
+  .do-label { color: #2D6B2D; }
+  .dont-label { color: var(--color-destructive); }
+
+  .do-block ul, .dont-block ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .do-block ul li, .dont-block ul li {
+    font-size: var(--text-sm);
+    padding: var(--space-1) 0;
+    color: var(--color-ink);
+    padding-left: var(--space-4);
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .do-block ul li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #2D6B2D;
+    font-size: var(--text-xs);
+    top: 3px;
+    font-weight: 700;
+  }
+
+  .dont-block ul li::before {
+    content: '×';
+    position: absolute;
+    left: 0;
+    color: var(--color-destructive);
+    font-size: var(--text-xs);
+    top: 3px;
+    font-weight: 700;
+  }
+
+  /* ── Card demos ── */
+  .card-demo {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    max-width: 340px;
+    margin: var(--space-4) 0;
+  }
+
+  .card-demo-row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .card-demo-thumb {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-muted);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .card-demo-thumb svg {
+    opacity: 0.3;
+  }
+
+  .card-demo-content { flex: 1; }
+
+  .card-demo-name {
+    font-family: var(--font-ui);
+    font-size: var(--text-md);
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: var(--space-1);
+  }
+
+  .card-demo-meta {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-2);
+  }
+
+  .card-demo-tags {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  /* ── Tags demo ── */
+  .tags-demo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-4) 0;
+  }
+
+  .tag {
+    height: 28px;
+    padding: 0 12px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-ui);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+  }
+
+  .tag-default {
+    background: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+  }
+
+  .tag-active {
+    background: var(--color-ink);
+    border: 1px solid var(--color-ink);
+    color: white;
+  }
+
+  .tag-accent {
+    background: var(--color-accent-muted);
+    border: none;
+    color: var(--color-accent);
+  }
+
+  .tag-muted {
+    background: var(--color-surface-muted);
+    border: none;
+    color: var(--color-text-secondary);
+  }
+
+  /* ── Input demo ── */
+  .input-demo {
+    max-width: 320px;
+    margin: var(--space-4) 0;
+  }
+
+  .input-demo label {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+    color: var(--color-ink);
+  }
+
+  .input-demo input {
+    display: block;
+    width: 100%;
+    height: 48px;
+    padding: 0 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-ui);
+    font-size: var(--text-base);
+    color: var(--color-ink);
+    background: var(--color-surface);
+    outline: none;
+  }
+
+  .input-demo input:focus {
+    border-color: var(--color-ink);
+    box-shadow: 0 0 0 3px rgba(5, 6, 21, 0.15);
+  }
+
+  /* ── Button demos ── */
+  .btn-demo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin: var(--space-4) 0;
+    align-items: center;
+  }
+
+  .btn {
+    height: 48px;
+    padding: 0 var(--space-6);
+    border-radius: var(--radius-md);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: opacity var(--duration-base) var(--ease-out);
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .btn-primary {
+    background: var(--color-ink);
+    color: white;
+  }
+
+  .btn-primary:hover { opacity: 0.88; }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--color-ink);
+    border: 1px solid var(--color-ink);
+  }
+
+  .btn-accent {
+    background: var(--color-accent);
+    color: white;
+  }
+
+  /* ── Motion tokens ── */
+  .motion-demo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: var(--space-6) 0;
+  }
+
+  .motion-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .motion-bar-wrap {
+    flex: 1;
+    height: 4px;
+    background: var(--color-border);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+  }
+
+  .motion-bar {
+    height: 100%;
+    background: var(--color-accent);
+    border-radius: var(--radius-pill);
+  }
+
+  .motion-label {
+    width: 140px;
+    font-size: var(--text-xs);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--color-text-secondary);
+  }
+
+  .motion-value {
+    width: 40px;
+    font-size: var(--text-xs);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--color-text-secondary);
+    text-align: right;
+  }
+
+  /* ── Focus ring demo ── */
+  .focus-demo {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin: var(--space-4) 0;
+    align-items: center;
+  }
+
+  .focus-example {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    font-size: var(--text-sm);
+    outline: 3px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+
+  /* ── Vocabulary table ── */
+  .vocab-table td:first-child {
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+
+  .vocab-table td:last-child {
+    color: var(--color-text-secondary);
+    font-size: var(--text-sm);
+  }
+
+  /* ── Tone examples ── */
+  .tone-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    margin: var(--space-3) 0;
+  }
+
+  .tone-do, .tone-dont {
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+  }
+
+  .tone-do {
+    background: #F0F5F0;
+    border: 1px solid #B8D4B8;
+  }
+
+  .tone-dont {
+    background: #FAF0EE;
+    border: 1px solid #E8C4BC;
+  }
+
+  .tone-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-2);
+  }
+
+  .tone-do .tone-label { color: #2D6B2D; }
+  .tone-dont .tone-label { color: var(--color-destructive); }
+
+  /* ── Implementation checklist ── */
+  .checklist {
+    list-style: none;
+    margin: var(--space-4) 0;
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    font-size: var(--text-sm);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .checklist li:last-child { border-bottom: none; }
+
+  .checklist-box {
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── Nav demo ── */
+  .nav-demo {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    justify-content: space-around;
+    max-width: 360px;
+    margin: var(--space-4) 0;
+  }
+
+  .nav-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-family: var(--font-ui);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+  }
+
+  .nav-tab.active { color: var(--color-ink); }
+  .nav-tab.accent { color: var(--color-accent); }
+
+  .nav-tab-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Utility ── */
+  .divider {
+    height: 1px;
+    background: var(--color-border);
+    margin: var(--space-8) 0;
+  }
+
+  .caption {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    margin-top: var(--space-2);
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+    margin: var(--space-4) 0;
+  }
+
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: var(--space-8) var(--space-6); }
+    .do-dont, .tone-pair, .two-col { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ── SIDEBAR ── -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="64" height="52" viewBox="0 0 81 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M24.3314 63.7608C24.3314 63.4334 24.6824 63.0126 25.3844 62.4982C26.102 61.9838 26.5856 61.181 26.8352 60.0899C27.0848 58.9832 27.2096 54.8057 27.2096 47.5575C27.2096 40.3093 27.1238 36.202 26.9522 35.2355C26.7962 34.2691 26.3984 33.5754 25.7588 33.1546C24.7292 32.4843 24.2144 32.0712 24.2144 31.9154V31.6348C24.2144 31.3698 24.4406 31.136 24.893 30.9334C26.297 30.3254 28.1691 30.0215 30.5091 30.0215H30.9771C31.7727 30.0215 32.233 30.5593 32.3578 31.6348C32.3734 31.7751 32.3812 32.9519 32.3812 35.1654V40.1924L32.3578 41.151V42.624L32.3344 43.5827C32.3344 43.5827 32.3344 46.0533 32.3344 50.9945C32.3344 55.6085 32.4046 58.4688 32.545 59.5755C32.701 60.6666 33.052 61.4616 33.598 61.9604C33.6604 62.0072 33.988 62.2098 34.5808 62.5683C35.1736 62.9268 35.47 63.2931 35.47 63.6672C35.47 64.2128 34.5028 64.4856 32.5684 64.4856L31.6089 64.5323H30.6495L26.8118 64.6025H26.3204C24.9944 64.6025 24.3314 64.3219 24.3314 63.7608Z" fill="#050615"/>
+        <path d="M43.489 34.5575C43.489 35.2433 43.1926 35.8824 42.5997 36.4747C42.0225 37.0515 41.4453 37.3398 40.8681 37.3398C40.7433 37.371 40.6419 37.3866 40.5639 37.3866L40.0491 37.4334C39.2691 37.4334 38.567 37.1762 37.943 36.6618C37.3346 36.1474 37.0304 35.4849 37.0304 34.6744V34.2535C37.0304 33.443 37.3502 32.7649 37.9898 32.2193C38.645 31.6582 39.3939 31.3776 40.2363 31.3776H40.3533L41.1489 31.4711C41.6325 31.4711 42.1317 31.7361 42.6465 32.2661C43.177 32.7805 43.4422 33.3027 43.4422 33.8326L43.489 34.0431V34.5575ZM36.0476 44.9855C35.2364 44.5959 34.8307 44.2295 34.8307 43.8866C34.8307 43.5437 34.9945 43.2709 35.3222 43.0683C36.461 42.3824 38.2628 42.0395 40.7277 42.0395H41.4063C42.2487 42.0395 42.7245 42.4292 42.8337 43.2086C42.8961 43.6294 42.9273 46.4664 42.9273 51.7194C42.9273 56.9568 43.0366 59.9652 43.255 60.7446C43.4734 61.5084 43.996 62.1007 44.8228 62.5215C45.6496 62.9268 46.063 63.3399 46.063 63.7608C46.063 64.3531 44.1286 64.6493 40.2597 64.6493L39.5577 64.6726H36.7028C35.564 64.6726 34.9945 64.3921 34.9945 63.8309C34.9945 63.3633 35.3378 62.9112 36.0242 62.4748C36.7262 62.0383 37.2098 61.5551 37.475 61.0251C37.7714 60.4484 37.9196 59.1001 37.9196 56.9802L37.943 56.232V55.5071L37.9664 54.4082V53.6834L37.9898 52.9586C37.9898 49.2643 37.865 47.1132 37.6154 46.5053C37.3814 45.8818 36.8588 45.3752 36.0476 44.9855Z" fill="#050615"/>
+        <path d="M60.7979 54.0809C62.0304 55.25 62.6466 56.7308 62.6466 58.5233C62.6466 60.3003 61.9133 61.8279 60.4469 63.1061C58.9805 64.3687 56.9524 65 54.3628 65H53.7309C50.7825 65 48.536 64.6337 46.9916 63.9011C46.1335 63.4958 45.7045 62.5917 45.7045 61.1888V60.6043C45.7045 58.8117 46.0399 57.9154 46.7108 57.9154C47.2724 57.9154 47.9354 58.4454 48.6998 59.5054C49.4642 60.5497 50.1038 61.2512 50.6187 61.6097C51.6171 62.2955 52.7871 62.6385 54.1287 62.6385C55.486 62.6385 56.4844 62.3579 57.124 61.7967C57.7636 61.22 58.0835 60.464 58.0835 59.5287C58.0835 58.5935 57.5374 57.7284 56.4454 56.9334C55.8682 56.5125 54.5188 55.8501 52.3971 54.946C50.291 54.0419 48.7154 53.0989 47.6702 52.1169C46.625 51.1192 46.1023 49.7164 46.1023 47.9082C46.1023 46.1001 46.859 44.6348 48.3722 43.5125C49.8854 42.3746 51.7497 41.8057 53.9649 41.8057H54.5968C57.4984 41.8057 59.5343 42.1486 60.7043 42.8345C61.3127 43.193 61.6169 44.1906 61.6169 45.8273C61.6169 47.464 61.2269 48.2823 60.4469 48.2823C60.0101 48.2823 59.4095 47.7991 58.6451 46.8327C57.8962 45.8507 57.2098 45.157 56.5858 44.7517C55.9618 44.3309 55.096 44.1204 53.9883 44.1204C52.8963 44.1204 52.0305 44.3698 51.3909 44.8686C50.7513 45.3674 50.4315 46.0923 50.4315 47.0431C50.4315 47.9784 51.0165 48.8201 52.1865 49.5683C52.4829 49.7709 53.7777 50.371 56.071 51.3687C58.3643 52.3663 59.9399 53.2703 60.7979 54.0809Z" fill="#050615"/>
+        <path d="M72.3737 61.4928L75.9306 60.955C76.3362 60.955 76.539 61.2745 76.539 61.9136C76.539 62.5371 75.9384 63.184 74.7372 63.8543C73.536 64.5246 72.2723 64.8597 70.9463 64.8597H70.4783C69.4331 64.8597 68.4892 64.5869 67.6468 64.0413C66.8044 63.4958 66.1882 62.8255 65.7982 62.0305C65.1273 60.6432 64.7919 58.0167 64.7919 54.151C64.7919 50.2697 64.6515 47.8459 64.3707 46.8794C64.1055 45.913 63.7545 45.2505 63.3177 44.892C62.5065 44.2373 62.1009 43.8788 62.1009 43.8165C62.1009 43.4112 62.3115 43.0683 62.7327 42.7877C63.8091 42.0707 64.3941 41.6654 64.4877 41.5719C64.5969 41.4628 65.1975 40.1846 66.2896 37.7373C66.8356 36.5215 67.4518 35.9136 68.1382 35.9136C68.8402 35.9136 69.3083 36.163 69.5423 36.6618C69.6047 36.7865 69.7373 37.4645 69.9401 38.696C70.1585 39.9274 70.4627 40.7223 70.8527 41.0809C71.2427 41.4238 72.1085 41.7589 73.4502 42.0863C74.7918 42.398 75.4626 42.85 75.4626 43.4424C75.4626 44.0347 74.7216 44.4789 73.2396 44.7751C71.7575 45.0713 70.8605 45.4532 70.5485 45.9208C70.0025 46.7158 69.7295 48.9604 69.7295 52.6546C69.7295 56.3489 69.9011 58.6792 70.2443 59.6456C70.6811 60.8771 71.3909 61.4928 72.3737 61.4928Z" fill="#050615"/>
+        <path d="M18.9149 13.4677V12.7428C18.9149 11.5894 18.5015 10.5528 17.6747 9.63311C16.8479 8.69786 15.8338 8.23023 14.6326 8.23023H14.188C13.9696 8.26141 13.8214 8.277 13.7434 8.277C12.6514 8.277 11.6139 8.9005 10.6311 10.1475C9.66388 11.3945 9.18027 12.7272 9.18027 14.1457V14.4497C9.18027 14.9485 9.47668 15.1979 10.0695 15.1979C10.3035 15.2446 10.4283 15.268 10.4439 15.268L10.9821 15.2914H11.1225L11.2863 15.268L15.8026 15.0108L16.6451 14.9173C18.1583 14.9173 18.9149 14.4341 18.9149 13.4677ZM9.18027 19.6637C9.18027 21.4407 9.85109 22.9293 11.1927 24.1295C12.5344 25.3298 14.2348 25.9299 16.2941 25.9299C17.1209 25.9299 17.8697 25.813 18.5405 25.5792C19.2269 25.3298 19.9679 25.0336 20.7636 24.6907C21.5748 24.3478 22.0818 24.1763 22.2846 24.1763C22.9086 24.1763 23.2206 24.5114 23.2206 25.1817C23.2206 26.0858 22.0662 27.0522 19.7573 28.081C18.2597 28.7513 16.6529 29.0864 14.9368 29.0864H14.422C11.4891 29.0864 9.05547 28.1979 7.12102 26.4209C6.07579 25.4545 5.26457 24.2231 4.68736 22.7267C4.11014 21.2147 3.82153 19.5936 3.82153 17.8633L3.84493 17.3256V16.7878C3.84493 15.2914 4.18814 13.8184 4.87456 12.3687C5.57658 10.9191 6.4112 9.72664 7.37842 8.79138C9.42208 6.82735 11.8479 5.83754 14.656 5.82195C18.8993 5.82195 21.723 7.47424 23.127 10.7788C23.5638 11.8232 23.7822 12.7818 23.7822 13.6547V14.1223C23.7822 15.1979 23.3376 15.9227 22.4484 16.2968C21.5592 16.6553 19.4609 16.9515 16.1536 17.1853C12.8464 17.4191 11.0523 17.575 10.7715 17.6529C9.71068 17.9179 9.18027 18.5882 9.18027 19.6637Z" fill="#050615"/>
+        <path d="M39.2538 11.8076V11.1763C39.2538 10.6151 39.0198 10.1397 38.5518 9.75002C38.0994 9.34474 37.4753 9.14211 36.6797 9.14211H35.9777C35.1821 9.14211 34.2383 9.46165 33.1462 10.1007C32.0542 10.7398 31.1182 11.6673 30.3382 12.8831C28.4661 15.7668 27.5301 18.6583 27.5301 21.5576V21.7914C27.5301 23.0384 27.7407 24.0672 28.1619 24.8777C28.5987 25.6727 29.2305 26.0702 30.0574 26.0702H30.4786C31.2898 26.0702 32.2882 25.5948 33.4738 24.6439C34.6595 23.6931 35.6189 22.5942 36.3521 21.3472C37.1009 20.0846 37.7717 18.4635 38.3646 16.4838C38.9574 14.5042 39.2538 12.9455 39.2538 11.8076ZM39.9558 7.90289L42.9511 7.52879C43.4191 7.52879 43.6531 7.84834 43.6531 8.48743C43.6531 9.11093 43.1539 11.4179 42.1555 15.4083C41.157 19.3987 40.6578 21.9395 40.6578 23.0306C40.6578 24.1218 41.1648 24.6673 42.1789 24.6673L43.0447 24.5738C43.6687 24.5738 43.9807 24.7219 43.9807 25.018V25.2519C43.9807 25.8286 43.4269 26.4365 42.3193 27.0756C41.2272 27.6991 40.2834 28.0108 39.4878 28.0108C38.6922 28.0108 38.1462 27.8238 37.8498 27.4497C37.5533 27.06 37.2725 26.3664 37.0073 25.3688L36.8201 24.4335C36.7421 24.0438 36.6719 23.849 36.6095 23.849C36.4691 23.849 35.4473 24.5972 33.544 26.0936C31.6564 27.59 29.9715 28.3382 28.4895 28.3382H28.0683C26.7579 28.3382 25.7126 27.8316 24.9326 26.8184C24.1682 25.7896 23.786 24.4569 23.786 22.8202V22.3292C23.786 20.8484 24.1136 19.1727 24.7688 17.3022C26.048 13.6703 28.2789 10.8411 31.4614 8.81477C33.0526 7.80157 34.5893 7.29498 36.0713 7.29498H36.5159C36.9527 7.29498 37.5065 7.3963 38.1774 7.59894C38.8638 7.80157 39.4566 7.90289 39.9558 7.90289Z" fill="#050615"/>
+        <path d="M54.4211 25.5792L57.978 25.0414C58.3836 25.0414 58.5864 25.361 58.5864 26.0001C58.5864 26.6236 57.9858 27.2704 56.7846 27.9407C55.5834 28.611 54.3197 28.9461 52.9937 28.9461H52.5257C51.4804 28.9461 50.5366 28.6733 49.6942 28.1278C48.8518 27.5822 48.2356 26.9119 47.8456 26.117C47.1747 24.7297 46.8393 22.1032 46.8393 18.2374C46.8393 14.3561 46.6989 11.9323 46.4181 10.9658C46.1529 9.99942 45.8019 9.33695 45.3651 8.97844C44.5539 8.32376 44.1483 7.96524 44.1483 7.90289C44.1483 7.49762 44.3589 7.15469 44.7801 6.87411C45.8565 6.15709 46.4415 5.75181 46.5351 5.65828C46.6443 5.54917 47.2449 4.27099 48.337 1.82374C48.883 0.607915 49.4992 0 50.1856 0C50.8876 0 51.3556 0.249401 51.5896 0.748203C51.6521 0.872903 51.7847 1.55096 51.9875 2.78238C52.2059 4.0138 52.5101 4.80876 52.9001 5.16728C53.2901 5.5102 54.1559 5.84534 55.4975 6.17267C56.8392 6.48443 57.51 6.93646 57.51 7.52879C57.51 8.12112 56.769 8.56536 55.2869 8.86153C53.8049 9.15769 52.9079 9.53959 52.5959 10.0072C52.0499 10.8022 51.7769 13.0468 51.7769 16.741C51.7769 20.4353 51.9485 22.7656 52.2917 23.7321C52.7285 24.9635 53.4383 25.5792 54.4211 25.5792Z" fill="#050615"/>
+      </svg>
+      <div class="sidebar-meta">Product Foundations · v1.0</div>
+    </div>
+
+    <ul class="sidebar-nav">
+      <li class="nav-section-label">Product</li>
+      <li><a href="#mission">01 — Mission</a></li>
+      <li><a href="#principles">02 — Principles</a></li>
+      <li><a href="#brand-vs-ui">03 — Brand vs UI</a></li>
+      <li class="nav-section-label">Visual</li>
+      <li><a href="#colour">04 — Colour</a></li>
+      <li><a href="#typography">05 — Typography</a></li>
+      <li><a href="#spacing">06 — Spacing</a></li>
+      <li><a href="#radius">07 — Radius</a></li>
+      <li><a href="#grid">08 — Grid</a></li>
+      <li class="nav-section-label">Components</li>
+      <li><a href="#cards">09 — Cards</a></li>
+      <li><a href="#tags">10 — Tags / Chips</a></li>
+      <li><a href="#forms">11 — Forms &amp; Inputs</a></li>
+      <li><a href="#navigation">12 — Navigation</a></li>
+      <li class="nav-section-label">Assets</li>
+      <li><a href="#iconography">13 — Iconography</a></li>
+      <li><a href="#photography">14 — Photography</a></li>
+      <li><a href="#illustration">15 — Graphic Marks</a></li>
+      <li><a href="#motion">16 — Motion</a></li>
+      <li class="nav-section-label">Accessibility</li>
+      <li><a href="#accessibility">17 — Focus &amp; A11y</a></li>
+      <li class="nav-section-label">Language</li>
+      <li><a href="#tone">18 — Tone of Voice</a></li>
+      <li><a href="#vocabulary">19 — Vocabulary</a></li>
+      <li><a href="#dodont">20 — Do / Don't</a></li>
+      <li><a href="#implementation">21 — Implementation</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+
+    <!-- Page header -->
+    <header class="page-header">
+      <div class="page-header-eyebrow">Eatlist · Product Foundations</div>
+      <h1>01</h1>
+      <p class="page-header-lead">A personal archive of places worth remembering.</p>
+    </header>
+
+    <!-- 01 Mission -->
+    <section class="section" id="mission">
+      <div class="section-number">01</div>
+      <h2>Mission</h2>
+      <p>Eatlist is a personal archive of places worth remembering. Not a discovery platform, not a review site, not a social feed — a quiet, opinionated tool for people who care about where they eat and want to hold onto why it mattered.</p>
+      <p>The product exists to help people save, organise, remember, and occasionally share restaurants — with the same care they'd give to a notebook they carry everywhere.</p>
+    </section>
+
+    <!-- 02 Principles -->
+    <section class="section" id="principles">
+      <div class="section-number">02</div>
+      <h2>Product Principles</h2>
+
+      <div class="principle">
+        <p><strong>Archive, don't overwhelm.</strong> The app stores memory, not noise. Every element earns its place.</p>
+      </div>
+      <div class="principle">
+        <p><strong>Personal by default.</strong> Eatlist is for you first. Sharing is an option, not the point.</p>
+      </div>
+      <div class="principle">
+        <p><strong>Quiet UI, expressive brand.</strong> The product interface stays calm. Brand expression lives in illustration, empty states, and moments between interactions.</p>
+      </div>
+      <div class="principle">
+        <p><strong>Clarity over decoration.</strong> Functional elements are never decorative. Decorative elements are never functional.</p>
+      </div>
+      <div class="principle">
+        <p><strong>Memory, not discovery.</strong> Eatlist doesn't suggest where to go. It helps you remember where you've been and where you mean to go.</p>
+      </div>
+    </section>
+
+    <!-- 03 Brand vs UI -->
+    <section class="section" id="brand-vs-ui">
+      <div class="section-number">03</div>
+      <h2>Brand Expression vs Product UI</h2>
+      <p>Eatlist has two registers. They must be kept distinct.</p>
+
+      <div class="two-col">
+        <div>
+          <h3>Brand world</h3>
+          <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: var(--space-3);">Campaigns · Landing pages · Social · Posters</p>
+          <ul style="list-style: none; font-size: var(--text-sm);">
+            <li style="padding: var(--space-1) 0; border-bottom: 1px solid var(--color-border);">✦ Editorial type pairings</li>
+            <li style="padding: var(--space-1) 0; border-bottom: 1px solid var(--color-border);">✦ Handwritten / script accents</li>
+            <li style="padding: var(--space-1) 0; border-bottom: 1px solid var(--color-border);">✦ Photo collage, film grain</li>
+            <li style="padding: var(--space-1) 0; border-bottom: 1px solid var(--color-border);">✦ Bold graphic illustration</li>
+            <li style="padding: var(--space-1) 0;">✦ Can be loud and expressive</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Product UI</h3>
+          <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: var(--space-3);">App screens · Flows · Components</p>
+          <ul style="list-style: none; font-size: var(--text-sm);">
+            <li style="padding: var(--space-1) 0; border-bottom: 1px solid var(--color-border);">→ Handwritten fonts: never for UI text</li>
+            <li style="padding: var(--space-1) 0; border-bottom: 1px solid var(--color-border);">→ Illustration: empty states only</li>
+            <li style="padding: var(--space-1) 0; border-bottom: 1px solid var(--color-border);">→ Photography: personal, not styled</li>
+            <li style="padding: var(--space-1) 0; border-bottom: 1px solid var(--color-border);">→ Fraunces for display only</li>
+            <li style="padding: var(--space-1) 0;">→ Inter for all body and UI text</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="principle">
+        <p><strong>The rule:</strong> if a user needs to read it to use the app, it must be in Inter. If it's a moment of brand expression, it can reach for Fraunces or illustration.</p>
+      </div>
+    </section>
+
+    <!-- 04 Colour -->
+    <section class="section" id="colour">
+      <div class="section-number">04</div>
+      <h2>Colour</h2>
+      <p>A restrained palette. Warm parchment base, deep ink, and a single cobalt accent that reads editorial and archival — never food-generic.</p>
+
+      <div class="swatch-grid">
+        <div class="swatch">
+          <div class="swatch-color" style="background: #050615;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Ink</div>
+            <div class="swatch-hex">#050615</div>
+            <div class="swatch-token">--color-ink</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background: #F4EFE6; border-bottom: 1px solid #E0D9CF;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Cream</div>
+            <div class="swatch-hex">#F4EFE6</div>
+            <div class="swatch-token">--color-cream</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background: #FFFFFF; border-bottom: 1px solid #E0D9CF;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Surface</div>
+            <div class="swatch-hex">#FFFFFF</div>
+            <div class="swatch-token">--color-surface</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background: #F0EBE1; border-bottom: 1px solid #E0D9CF;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Surface Muted</div>
+            <div class="swatch-hex">#F0EBE1</div>
+            <div class="swatch-token">--color-surface-muted</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background: #1D38C0;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Accent</div>
+            <div class="swatch-hex">#1D38C0</div>
+            <div class="swatch-token">--color-accent</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background: #E8ECF9; border-bottom: 1px solid #E0D9CF;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Accent Muted</div>
+            <div class="swatch-hex">#E8ECF9</div>
+            <div class="swatch-token">--color-accent-muted</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background: #7A7470;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Secondary Text</div>
+            <div class="swatch-hex">#7A7470</div>
+            <div class="swatch-token">--color-text-secondary</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background: #E0D9CF; border-bottom: 1px solid #CFC8BE;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Border</div>
+            <div class="swatch-hex">#E0D9CF</div>
+            <div class="swatch-token">--color-border</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background: #B5362A;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Destructive</div>
+            <div class="swatch-hex">#B5362A</div>
+            <div class="swatch-token">--color-destructive</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Contrast</h3>
+      <table>
+        <thead><tr><th>Pairing</th><th>Ratio</th><th>Level</th></tr></thead>
+        <tbody>
+          <tr><td>Ink on Cream</td><td>≈ 15:1</td><td><span class="tag tag-accent" style="height: 20px; padding: 0 8px; font-size: 10px;">AAA ✓</span></td></tr>
+          <tr><td>Secondary on Cream</td><td>≈ 4.6:1</td><td><span class="tag tag-accent" style="height: 20px; padding: 0 8px; font-size: 10px;">AA ✓</span></td></tr>
+          <tr><td>Accent on White</td><td>≈ 7.5:1</td><td><span class="tag tag-accent" style="height: 20px; padding: 0 8px; font-size: 10px;">AAA ✓</span></td></tr>
+          <tr><td>White on Accent</td><td>≈ 7.5:1</td><td><span class="tag tag-accent" style="height: 20px; padding: 0 8px; font-size: 10px;">AAA ✓</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 05 Typography -->
+    <section class="section" id="typography">
+      <div class="section-number">05</div>
+      <h2>Typography</h2>
+
+      <div class="two-col" style="margin-bottom: var(--space-8);">
+        <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-5);">
+          <div style="font-size: var(--text-xs); color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: var(--space-3);">Display</div>
+          <div style="font-family: var(--font-display); font-size: var(--text-2xl); font-weight: 300; line-height: 1.1; margin-bottom: var(--space-3);">Fraunces</div>
+          <div style="font-family: var(--font-display); font-size: var(--text-base); font-style: italic; color: var(--color-text-secondary);">Literary, warm, a little eccentric.</div>
+          <div style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-top: var(--space-3);">Google Fonts · Variable · Free</div>
+        </div>
+        <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-5);">
+          <div style="font-size: var(--text-xs); color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: var(--space-3);">UI / Body</div>
+          <div style="font-family: var(--font-ui); font-size: var(--text-2xl); font-weight: 400; line-height: 1.1; margin-bottom: var(--space-3);">Inter</div>
+          <div style="font-family: var(--font-ui); font-size: var(--text-base); color: var(--color-text-secondary);">Neutral, legible, widely supported.</div>
+          <div style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-top: var(--space-3);">Google Fonts · Variable · Free</div>
+        </div>
+      </div>
+
+      <h3>Type Scale</h3>
+      <div class="type-specimen">
+        <div class="type-row">
+          <div class="type-meta"><div class="type-meta-size">56px</div><div class="type-meta-token">--text-display</div></div>
+          <div class="type-example" style="font-family: var(--font-display); font-size: 56px; font-weight: 300; line-height: 1.1; letter-spacing: -0.02em;">Places</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><div class="type-meta-size">40px</div><div class="type-meta-token">--text-3xl</div></div>
+          <div class="type-example" style="font-family: var(--font-display); font-size: 40px; font-weight: 300; line-height: 1.15;">Worth remembering</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><div class="type-meta-size">32px</div><div class="type-meta-token">--text-2xl</div></div>
+          <div class="type-example" style="font-family: var(--font-display); font-size: 32px; font-weight: 300; line-height: 1.2;">Nothing saved yet</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><div class="type-meta-size">24px</div><div class="type-meta-token">--text-xl</div></div>
+          <div class="type-example" style="font-family: var(--font-display); font-size: 24px; font-weight: 300; line-height: 1.3;">Your list</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><div class="type-meta-size">20px</div><div class="type-meta-token">--text-lg</div></div>
+          <div class="type-example" style="font-family: var(--font-display); font-size: 20px; font-weight: 300; line-height: 1.4;">Saved places</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><div class="type-meta-size">17px</div><div class="type-meta-token">--text-md</div></div>
+          <div class="type-example" style="font-family: var(--font-ui); font-size: 17px; font-weight: 600; line-height: 1.5;">Le Verre Volé</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><div class="type-meta-size">15px</div><div class="type-meta-token">--text-base</div></div>
+          <div class="type-example" style="font-family: var(--font-ui); font-size: 15px; font-weight: 400; line-height: 1.6;">The place we always end up at. Ask for the charcuterie, sit outside if you can, and don't rush.</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><div class="type-meta-size">13px</div><div class="type-meta-token">--text-sm</div></div>
+          <div class="type-example" style="font-family: var(--font-ui); font-size: 13px; font-weight: 400; line-height: 1.5; color: var(--color-text-secondary);">Natural wine · Canal Saint-Martin · Paris</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><div class="type-meta-size">11px</div><div class="type-meta-token">--text-xs</div></div>
+          <div class="type-example" style="font-family: var(--font-ui); font-size: 11px; font-weight: 400; line-height: 1.4; color: var(--color-text-secondary);">Saved 3 months ago</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 Spacing -->
+    <section class="section" id="spacing">
+      <div class="section-number">06</div>
+      <h2>Spacing</h2>
+      <p>Base unit: 4px. All values are multiples of 4.</p>
+
+      <div class="spacing-scale">
+        <div class="spacing-row"><span class="spacing-label">--space-1</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 4px;"></div></div><span class="spacing-value">4px</span></div>
+        <div class="spacing-row"><span class="spacing-label">--space-2</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 8px;"></div></div><span class="spacing-value">8px</span></div>
+        <div class="spacing-row"><span class="spacing-label">--space-3</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 12px;"></div></div><span class="spacing-value">12px</span></div>
+        <div class="spacing-row"><span class="spacing-label">--space-4</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 16px;"></div></div><span class="spacing-value">16px</span></div>
+        <div class="spacing-row"><span class="spacing-label">--space-5</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 20px;"></div></div><span class="spacing-value">20px</span></div>
+        <div class="spacing-row"><span class="spacing-label">--space-6</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 24px;"></div></div><span class="spacing-value">24px</span></div>
+        <div class="spacing-row"><span class="spacing-label">--space-8</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 32px;"></div></div><span class="spacing-value">32px</span></div>
+        <div class="spacing-row"><span class="spacing-label">--space-10</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 40px;"></div></div><span class="spacing-value">40px</span></div>
+        <div class="spacing-row"><span class="spacing-label">--space-12</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 48px;"></div></div><span class="spacing-value">48px</span></div>
+        <div class="spacing-row"><span class="spacing-label">--space-16</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 64px;"></div></div><span class="spacing-value">64px</span></div>
+        <div class="spacing-row"><span class="spacing-label">--space-20</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 80px;"></div></div><span class="spacing-value">80px</span></div>
+        <div class="spacing-row"><span class="spacing-label">--space-24</span><div class="spacing-bar-wrap"><div class="spacing-bar" style="width: 96px;"></div></div><span class="spacing-value">96px</span></div>
+      </div>
+    </section>
+
+    <!-- 07 Radius -->
+    <section class="section" id="radius">
+      <div class="section-number">07</div>
+      <h2>Radius</h2>
+      <p>Soft but grounded. Archival warmth, not playful roundness.</p>
+
+      <div class="radius-grid">
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius: 0;"></div>
+          <div class="radius-label">--radius-none<br>0px</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius: 4px;"></div>
+          <div class="radius-label">--radius-sm<br>4px</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius: 8px;"></div>
+          <div class="radius-label">--radius-md<br>8px · cards</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius: 12px;"></div>
+          <div class="radius-label">--radius-lg<br>12px · sheets</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius: 16px;"></div>
+          <div class="radius-label">--radius-xl<br>16px · images</div>
+        </div>
+        <div class="radius-item">
+          <div class="radius-box" style="border-radius: 9999px; width: 64px;"></div>
+          <div class="radius-label">--radius-pill<br>9999px · chips</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 Grid -->
+    <section class="section" id="grid">
+      <div class="section-number">08</div>
+      <h2>Grid</h2>
+      <table>
+        <thead><tr><th>Breakpoint</th><th>Columns</th><th>Gutter</th><th>Margin</th></tr></thead>
+        <tbody>
+          <tr><td>Mobile (default)</td><td>4</td><td>16px</td><td>16px</td></tr>
+          <tr><td>Tablet ≥ 768px</td><td>8</td><td>24px</td><td>24px</td></tr>
+          <tr><td>Desktop ≥ 1024px</td><td>12</td><td>24px</td><td>48px</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">Layout patterns: single-column list · 2-column grid · full-width (map, photo detail)</p>
+    </section>
+
+    <!-- 09 Cards -->
+    <section class="section" id="cards">
+      <div class="section-number">09</div>
+      <h2>Cards</h2>
+      <p>The primary container for restaurant data. The card is the product.</p>
+
+      <h3>List card (compact)</h3>
+      <div class="card-demo">
+        <div class="card-demo-row">
+          <div class="card-demo-thumb">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#050615" stroke-width="1.5" stroke-linecap="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/>
+            </svg>
+          </div>
+          <div class="card-demo-content">
+            <div class="card-demo-name">Le Verre Volé</div>
+            <div class="card-demo-meta">Canal Saint-Martin · Paris</div>
+            <div class="card-demo-tags">
+              <span class="tag tag-accent">Visited</span>
+              <span class="tag tag-default">Natural wine</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="caption">8px radius · 1px border · no shadow · white background</p>
+
+      <div class="do-dont" style="margin-top: var(--space-6);">
+        <div class="do-block"><div class="do-label">Do</div><ul>
+          <li>Use 1px border for elevation (not shadow)</li>
+          <li>White or cream card backgrounds only</li>
+          <li>Max 3 visible metadata fields</li>
+          <li>Minimum 8px gap between list items</li>
+        </ul></div>
+        <div class="dont-block"><div class="dont-label">Don't</div><ul>
+          <li>Add drop shadows to list cards</li>
+          <li>Use coloured card backgrounds</li>
+          <li>Style cards like social feed posts</li>
+          <li>Compress cards to show more content</li>
+        </ul></div>
+      </div>
+    </section>
+
+    <!-- 10 Tags -->
+    <section class="section" id="tags">
+      <div class="section-number">10</div>
+      <h2>Tags / Chips</h2>
+
+      <h3>Variants</h3>
+      <div class="tags-demo">
+        <span class="tag tag-default">Natural wine</span>
+        <span class="tag tag-default">Paris</span>
+        <span class="tag tag-active">Visited</span>
+        <span class="tag tag-accent">Want to go</span>
+        <span class="tag tag-muted">Bistro</span>
+      </div>
+
+      <table>
+        <thead><tr><th>Variant</th><th>Background</th><th>Border</th><th>Text</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td>transparent</td><td>1px <code>--color-border</code></td><td><code>--color-text-primary</code></td></tr>
+          <tr><td>Active</td><td><code>--color-ink</code></td><td>none</td><td>white</td></tr>
+          <tr><td>Accent</td><td><code>--color-accent-muted</code></td><td>none</td><td><code>--color-accent</code></td></tr>
+          <tr><td>Muted</td><td><code>--color-surface-muted</code></td><td>none</td><td><code>--color-text-secondary</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 11 Forms -->
+    <section class="section" id="forms">
+      <div class="section-number">11</div>
+      <h2>Forms and Inputs</h2>
+
+      <h3>Input field</h3>
+      <div class="input-demo">
+        <label>Place name</label>
+        <input type="text" placeholder="e.g. Le Verre Volé">
+      </div>
+
+      <h3>Buttons</h3>
+      <div class="btn-demo">
+        <button class="btn btn-primary">Save place</button>
+        <button class="btn btn-secondary">Cancel</button>
+        <button class="btn btn-accent">Explore</button>
+      </div>
+
+      <table style="margin-top: var(--space-6);">
+        <thead><tr><th>State</th><th>Border</th><th>Background</th></tr></thead>
+        <tbody>
+          <tr><td>Default</td><td><code>--color-border</code></td><td><code>--color-surface</code></td></tr>
+          <tr><td>Focus</td><td><code>--color-ink</code> (2px) + 3px ring</td><td><code>--color-surface</code></td></tr>
+          <tr><td>Error</td><td><code>--color-destructive</code></td><td><code>--color-surface</code></td></tr>
+          <tr><td>Disabled</td><td><code>--color-border</code></td><td><code>--color-surface-muted</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="principle">
+        <p><strong>Notes textarea exception:</strong> the notes field uses Fraunces — the only exception to Inter-for-UI-text. Notes feel personal and journalistic, not clinical.</p>
+      </div>
+    </section>
+
+    <!-- 12 Navigation -->
+    <section class="section" id="navigation">
+      <div class="section-number">12</div>
+      <h2>Navigation</h2>
+
+      <h3>Bottom tab bar</h3>
+      <div class="nav-demo">
+        <div class="nav-tab active">
+          <div class="nav-tab-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </div>
+          List
+        </div>
+        <div class="nav-tab">
+          <div class="nav-tab-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+          </div>
+          Map
+        </div>
+        <div class="nav-tab accent">
+          <div class="nav-tab-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+          </div>
+          Save
+        </div>
+        <div class="nav-tab">
+          <div class="nav-tab-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </div>
+          Search
+        </div>
+        <div class="nav-tab">
+          <div class="nav-tab-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          Profile
+        </div>
+      </div>
+      <p class="caption">56px height · outline icons · labels always visible · max 5 tabs</p>
+    </section>
+
+    <!-- 13 Iconography -->
+    <section class="section" id="iconography">
+      <div class="section-number">13</div>
+      <h2>Iconography</h2>
+      <p>1.5–2px stroke, slightly rounded caps — consistent with the logomark line weight.</p>
+      <p>Recommended libraries: <strong>Phosphor Icons</strong> (regular) or <strong>Lucide Icons</strong>. Pick one, use it consistently.</p>
+
+      <div class="do-dont">
+        <div class="do-block"><div class="do-label">Do</div><ul>
+          <li>Use outline icons throughout — consistent weight</li>
+          <li>Pair icons with labels in navigation</li>
+          <li>Use logomark for brand moments only (splash, empty states)</li>
+          <li>24px standard · 20px compact · 16px inline</li>
+        </ul></div>
+        <div class="dont-block"><div class="dont-label">Don't</div><ul>
+          <li>Mix filled and outline styles in the same view</li>
+          <li>Use food icons (fork, knife, plate) for navigation</li>
+          <li>Use emoji as functional UI icons</li>
+          <li>Use the logomark in tab bars or buttons</li>
+        </ul></div>
+      </div>
+    </section>
+
+    <!-- 14 Photography -->
+    <section class="section" id="photography">
+      <div class="section-number">14</div>
+      <h2>Photography</h2>
+      <p>Photography in Eatlist should feel like personal memory — a film photo taken at a table, a street-level shot of a door. Imperfect framing is not a failure. It's authenticity.</p>
+
+      <div class="principle">
+        <p><strong>Not this:</strong> overhead food styling, sponsored hero images, stock photography, garnished plating.<br>
+        <strong>This:</strong> warm, filmic, natural light, slightly underexposed, B&W acceptable and encouraged.</p>
+      </div>
+
+      <table>
+        <thead><tr><th>Context</th><th>Ratio</th></tr></thead>
+        <tbody>
+          <tr><td>Card thumbnail</td><td>3:2</td></tr>
+          <tr><td>Detail header</td><td>4:3</td></tr>
+          <tr><td>Square thumbnail</td><td>1:1</td></tr>
+          <tr><td>Share card</td><td>1:1</td></tr>
+          <tr><td>Full-bleed detail</td><td>16:9</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 15 Illustration -->
+    <section class="section" id="illustration">
+      <div class="section-number">15</div>
+      <h2>Graphic Marks and Illustration</h2>
+      <p>Illustration exists only in empty states, onboarding, loading states, and special moments. It should feel like it came from the same hand as the logomark.</p>
+
+      <h3>Style rules</h3>
+      <table>
+        <thead><tr><th>Property</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Stroke weight</td><td>2px — matches logomark</td></tr>
+          <tr><td>Colour</td><td><code>--color-ink</code> or <code>--color-accent</code> only — never multicolour</td></tr>
+          <tr><td>Subject matter</td><td>Abstract, gestural, cultural — not literal food</td></tr>
+          <tr><td>Style</td><td>Hand-drawn line art, consistent with logomark energy</td></tr>
+          <tr><td>Use in product</td><td>Empty states · Onboarding · Loading · Special moments</td></tr>
+          <tr><td>Not in product</td><td>Background decoration on active screens</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 16 Motion -->
+    <section class="section" id="motion">
+      <div class="section-number">16</div>
+      <h2>Motion</h2>
+      <p>Motion is a quiet companion — never a spectacle.</p>
+
+      <h3>Duration tokens</h3>
+      <div class="motion-demo">
+        <div class="motion-row"><span class="motion-label">--duration-instant</span><div class="motion-bar-wrap"><div class="motion-bar" style="width: 8%;"></div></div><span class="motion-value">80ms</span></div>
+        <div class="motion-row"><span class="motion-label">--duration-fast</span><div class="motion-bar-wrap"><div class="motion-bar" style="width: 15%;"></div></div><span class="motion-value">150ms</span></div>
+        <div class="motion-row"><span class="motion-label">--duration-base</span><div class="motion-bar-wrap"><div class="motion-bar" style="width: 25%;"></div></div><span class="motion-value">250ms</span></div>
+        <div class="motion-row"><span class="motion-label">--duration-slow</span><div class="motion-bar-wrap"><div class="motion-bar" style="width: 40%;"></div></div><span class="motion-value">400ms</span></div>
+        <div class="motion-row"><span class="motion-label">--duration-crawl</span><div class="motion-bar-wrap"><div class="motion-bar" style="width: 60%;"></div></div><span class="motion-value">600ms</span></div>
+      </div>
+
+      <pre>--ease-out:   cubic-bezier(0.0, 0.0, 0.2, 1.0)  /* entering */
+--ease-in:    cubic-bezier(0.4, 0.0, 1.0, 1.0)  /* leaving */
+--ease-inout: cubic-bezier(0.4, 0.0, 0.2, 1.0)  /* position changes */</pre>
+
+      <div class="do-dont">
+        <div class="do-block"><div class="do-label">Do</div><ul>
+          <li>Fade + translate over scale for content transitions</li>
+          <li>Always include prefers-reduced-motion fallback</li>
+          <li>Keep motion invisible to users not looking for it</li>
+        </ul></div>
+        <div class="dont-block"><div class="dont-label">Don't</div><ul>
+          <li>Use spring or bounce physics</li>
+          <li>Animate more than 2 elements simultaneously</li>
+          <li>Use motion as the sole indicator of state change</li>
+        </ul></div>
+      </div>
+    </section>
+
+    <!-- 17 Accessibility -->
+    <section class="section" id="accessibility">
+      <div class="section-number">17</div>
+      <h2>Focus States and Accessibility</h2>
+
+      <h3>Focus ring</h3>
+      <div class="focus-demo">
+        <div class="focus-example">Focused element</div>
+        <button class="btn btn-primary" style="outline: 3px solid var(--color-ink); outline-offset: 2px;">Focused button</button>
+      </div>
+      <pre>outline: 3px solid var(--color-ink);
+outline-offset: 2px;</pre>
+
+      <h3>Touch targets</h3>
+      <p>Minimum 44×44px on all interactive elements. Preferred 48×48px for primary actions.</p>
+
+      <h3>Accessibility checklist (per feature)</h3>
+      <ul class="checklist">
+        <li><div class="checklist-box"></div>Focus ring visible on all interactive elements</li>
+        <li><div class="checklist-box"></div>Touch targets ≥ 44×44px</li>
+        <li><div class="checklist-box"></div>Colour contrast AA minimum verified</li>
+        <li><div class="checklist-box"></div>Alt text on all images</li>
+        <li><div class="checklist-box"></div>Semantic HTML (headings, landmarks, buttons not divs)</li>
+        <li><div class="checklist-box"></div>prefers-reduced-motion respected</li>
+        <li><div class="checklist-box"></div>Keyboard navigation tested end-to-end</li>
+        <li><div class="checklist-box"></div>Status never communicated by colour alone</li>
+      </ul>
+    </section>
+
+    <!-- 18 Tone of voice -->
+    <section class="section" id="tone">
+      <div class="section-number">18</div>
+      <h2>Tone of Voice</h2>
+      <p>Eatlist speaks like a knowledgeable friend who keeps a personal notebook. Warm but not gushing. Precise but not clinical. A little literary.</p>
+
+      <h3>Examples</h3>
+
+      <div style="margin: var(--space-4) 0;">
+        <div style="font-size: var(--text-xs); color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-2);">Empty state</div>
+        <div class="tone-pair">
+          <div class="tone-do"><div class="tone-label">Do</div>"Nothing saved yet. Start with a place you keep meaning to go back to."</div>
+          <div class="tone-dont"><div class="tone-label">Don't</div>"Your list is empty! Add some restaurants 🍽️"</div>
+        </div>
+      </div>
+
+      <div style="margin: var(--space-4) 0;">
+        <div style="font-size: var(--text-xs); color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-2);">Save confirmation</div>
+        <div class="tone-pair">
+          <div class="tone-do"><div class="tone-label">Do</div>"Saved."</div>
+          <div class="tone-dont"><div class="tone-label">Don't</div>"🎉 Added to your list!"</div>
+        </div>
+      </div>
+
+      <div style="margin: var(--space-4) 0;">
+        <div style="font-size: var(--text-xs); color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-2);">Error</div>
+        <div class="tone-pair">
+          <div class="tone-do"><div class="tone-label">Do</div>"Couldn't save this. Try again."</div>
+          <div class="tone-dont"><div class="tone-label">Don't</div>"Uh oh! Something went wrong."</div>
+        </div>
+      </div>
+
+      <div style="margin: var(--space-4) 0;">
+        <div style="font-size: var(--text-xs); color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-2);">Onboarding</div>
+        <div class="tone-pair">
+          <div class="tone-do"><div class="tone-label">Do</div>"Your list lives here. Add a place, leave a note, remember why it mattered."</div>
+          <div class="tone-dont"><div class="tone-label">Don't</div>"Welcome to Eatlist! Let's get started 🎉"</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 19 Vocabulary -->
+    <section class="section" id="vocabulary">
+      <div class="section-number">19</div>
+      <h2>Vocabulary</h2>
+      <table class="vocab-table">
+        <thead><tr><th>Use this</th><th>Not this</th></tr></thead>
+        <tbody>
+          <tr><td>place</td><td>restaurant, venue, spot, listing</td></tr>
+          <tr><td>list</td><td>collection, favorites, wishlist, library</td></tr>
+          <tr><td>save</td><td>add, bookmark, heart, star</td></tr>
+          <tr><td>note</td><td>review, comment, rating, feedback</td></tr>
+          <tr><td>visited</td><td>checked in, been here, completed</td></tr>
+          <tr><td>want to go</td><td>wishlist, planning to visit, interested</td></tr>
+          <tr><td>share</td><td>post, export, publish (in product)</td></tr>
+          <tr><td>Eatlist</td><td>eatlist, EatList, eat list</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 20 Do / Don't -->
+    <section class="section" id="dodont">
+      <div class="section-number">20</div>
+      <h2>Do / Don't</h2>
+
+      <div class="do-dont">
+        <div class="do-block"><div class="do-label">Do</div><ul>
+          <li>Design for daily use — every interaction should feel effortless</li>
+          <li>Use Fraunces for display moments, Inter for everything functional</li>
+          <li>Let user photography be the hero — keep the UI out of the way</li>
+          <li>Apply illustration only to empty states and onboarding</li>
+          <li>Use cream as the base — it's the parchment of a personal archive</li>
+          <li>Treat every card as a memory, not a data row</li>
+          <li>Keep the accent rare and meaningful — one standout per screen</li>
+          <li>Use 1px borders over shadows for elevation</li>
+          <li>Write copy that respects the user's intelligence</li>
+        </ul></div>
+        <div class="dont-block"><div class="dont-label">Don't</div><ul>
+          <li>Use delivery-app conventions (order CTAs, star ratings, promo banners)</li>
+          <li>Apply handwritten fonts to any functional UI text</li>
+          <li>Introduce social mechanics without deep product consideration</li>
+          <li>Use overhead food photography clichés</li>
+          <li>Animate for delight without functional purpose</li>
+          <li>Use generic food iconography in navigation</li>
+          <li>Add noise to screens that need silence</li>
+          <li>Communicate state through colour alone</li>
+        </ul></div>
+      </div>
+    </section>
+
+    <!-- 21 Implementation -->
+    <section class="section" id="implementation">
+      <div class="section-number">21</div>
+      <h2>Implementation Notes for Claude Code</h2>
+
+      <h3>Font loading</h3>
+      <pre>&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
+&lt;link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"&gt;</pre>
+
+      <h3>Token file (tokens.css)</h3>
+      <pre>:root {
+  /* Colour */
+  --color-ink:            #050615;
+  --color-cream:          #F4EFE6;
+  --color-surface:        #FFFFFF;
+  --color-surface-muted:  #F0EBE1;
+  --color-accent:         #1D38C0;
+  --color-accent-muted:   #E8ECF9;
+  --color-text-secondary: #7A7470;
+  --color-border:         #E0D9CF;
+  --color-destructive:    #B5362A;
+
+  /* Typography */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-ui:      'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Spacing */
+  --space-1: 4px;   --space-2: 8px;   --space-3: 12px;  --space-4: 16px;
+  --space-5: 20px;  --space-6: 24px;  --space-8: 32px;  --space-10: 40px;
+  --space-12: 48px; --space-16: 64px; --space-20: 80px;
+
+  /* Radius */
+  --radius-none: 0px;   --radius-sm: 4px;    --radius-md: 8px;
+  --radius-lg: 12px;    --radius-xl: 16px;   --radius-pill: 9999px;
+
+  /* Motion */
+  --duration-instant: 80ms;   --duration-fast: 150ms;
+  --duration-base: 250ms;     --duration-slow: 400ms;
+  --ease-out:   cubic-bezier(0.0, 0.0, 0.2, 1.0);
+  --ease-in:    cubic-bezier(0.4, 0.0, 1.0, 1.0);
+  --ease-inout: cubic-bezier(0.4, 0.0, 0.2, 1.0);
+}</pre>
+
+      <h3>Breakpoints</h3>
+      <pre>/* Mobile first */
+@media (min-width: 768px)  { /* tablet  */ }
+@media (min-width: 1024px) { /* desktop */ }</pre>
+
+      <h3>Key rules for Claude Code sessions</h3>
+      <ul class="checklist">
+        <li><div class="checklist-box" style="background: var(--color-accent-muted); border-color: var(--color-accent);"></div>Reference tokens by variable — never hard-code <code>#050615</code>, always <code>var(--color-ink)</code></li>
+        <li><div class="checklist-box" style="background: var(--color-accent-muted); border-color: var(--color-accent);"></div>Start with mobile layout, adapt upward</li>
+        <li><div class="checklist-box" style="background: var(--color-accent-muted); border-color: var(--color-accent);"></div>Fraunces for display only — when unsure, default to Inter</li>
+        <li><div class="checklist-box" style="background: var(--color-accent-muted); border-color: var(--color-accent);"></div>Notes textareas use Fraunces — the only Inter exception in forms</li>
+        <li><div class="checklist-box" style="background: var(--color-accent-muted); border-color: var(--color-accent);"></div>Cards use border (not box-shadow) for elevation</li>
+        <li><div class="checklist-box" style="background: var(--color-accent-muted); border-color: var(--color-accent);"></div>No food icons in navigation — use generic place/map/bookmark icons</li>
+        <li><div class="checklist-box" style="background: var(--color-accent-muted); border-color: var(--color-accent);"></div>Minimum 44×44px touch targets on all interactive elements</li>
+      </ul>
+
+      <div style="margin-top: var(--space-12); padding-top: var(--space-8); border-top: 1px solid var(--color-border);">
+        <p style="font-size: var(--text-sm); color: var(--color-text-secondary); font-style: italic;">
+          Eatlist Product Foundations · v1.0<br>
+          This document is the source of truth for product UI decisions. Brand world assets may deviate. All product screens must follow these foundations.
+        </p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Active sidebar link on scroll
+  const sections = document.querySelectorAll('.section[id]');
+  const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
