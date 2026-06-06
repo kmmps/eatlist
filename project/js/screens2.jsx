@@ -6,13 +6,14 @@ const MapScreen = ({ dark, go, allLists }) => {
   const c = getC(dark);
   const [activeFilter, setActiveFilter] = useState('Todos');
   const [selected, setSelected] = useState(null);
+  const [query, setQuery] = useState('');
   const filters = ['Todos', 'Abertos agora', 'Salvos', 'Amigos gostaram'];
 
   const allRestaurants = allLists.flatMap(l =>
     l.restaurants.map(r => ({ ...r, listTitle: l.title, listCategory: l.category }))
   );
 
-  const filtered = activeFilter === 'Todos'
+  const byFilter = activeFilter === 'Todos'
     ? allRestaurants
     : activeFilter === 'Abertos agora'
     ? allRestaurants.filter(r => r.isOpen !== false)
@@ -21,6 +22,10 @@ const MapScreen = ({ dark, go, allLists }) => {
     : activeFilter === 'Amigos gostaram'
     ? allRestaurants.filter(r => r.friendsLiked > 0)
     : allRestaurants;
+
+  const filtered = query.trim()
+    ? byFilter.filter(r => r.name.toLowerCase().includes(query.trim().toLowerCase()))
+    : byFilter;
 
   const center = [-23.5505, -46.6633];
 
@@ -48,7 +53,13 @@ const MapScreen = ({ dark, go, allLists }) => {
         <div style={{ padding: '0 16px 12px', background: 'transparent' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: dark ? 'rgba(5,6,21,0.92)' : 'rgba(255,255,255,0.95)', borderRadius: 32, padding: '10px 18px', boxShadow: '0 2px 12px rgba(0,0,0,0.15)', backdropFilter: 'blur(10px)' }}>
             <SearchIc s={18} col={GRAY}/>
-            <span style={{ fontFamily: '"DM Sans", sans-serif', fontSize: 15, color: '#CCC', letterSpacing: '-0.05em' }}>Buscar no mapa...</span>
+            <input
+              type="text"
+              placeholder="Buscar no mapa..."
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              style={{ border: 'none', background: 'transparent', outline: 'none', fontFamily: '"DM Sans", sans-serif', fontSize: 15, color: dark ? '#FFF' : '#333', letterSpacing: '-0.05em', flex: 1, width: '100%' }}
+            />
           </div>
         </div>
       </div>

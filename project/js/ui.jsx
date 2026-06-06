@@ -240,19 +240,14 @@ const LeafletMap = ({ dark, center, zoom = 14, markers = [], onMarkerClick, styl
   const ref = useRef(null);
   const mapR = useRef(null);
   const tileR = useRef(null);
+  const layerGroupR = useRef(null);
 
   const tileUrl = (d) => d ?
   'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' :
   'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 
-  useEffect(() => {
-    if (!ref.current || mapR.current) return;
-    const map = L.map(ref.current, { zoomControl: false, attributionControl: false }).setView(center, zoom);
-    mapR.current = map;
-    tileR.current = L.tileLayer(tileUrl(dark), { maxZoom: 19, subdomains: 'abcd' }).addTo(map);
-
-    markers.forEach((m) => {
-      // saved = coral with checkmark; friendsLiked = dark with heart; default = gray pin
+  const addMarkers = (map, mkList, clickHandler) => {
+    mkList.forEach((m) => {
       const isSaved = m.saved;
       const isFriend = !isSaved && m.friendsLiked > 0;
       const bg = isSaved ? CORAL : isFriend ? '#050615' : '#8D9091';
@@ -266,12 +261,26 @@ const LeafletMap = ({ dark, center, zoom = 14, markers = [], onMarkerClick, styl
         html: `<div style="width:32px;height:32px;background:${bg};border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.35);cursor:pointer;">${iconSvg}</div>`,
         iconSize: [32, 32], iconAnchor: [16, 16]
       });
-      const mk = L.marker([m.lat, m.lng], { icon }).addTo(map);
-      if (onMarkerClick) mk.on('click', () => onMarkerClick(m));
+      const mk = L.marker([m.lat, m.lng], { icon }).addTo(layerGroupR.current);
+      if (clickHandler) mk.on('click', () => clickHandler(m));
     });
+  };
 
+  useEffect(() => {
+    if (!ref.current || mapR.current) return;
+    const map = L.map(ref.current, { zoomControl: false, attributionControl: false }).setView(center, zoom);
+    mapR.current = map;
+    tileR.current = L.tileLayer(tileUrl(dark), { maxZoom: 19, subdomains: 'abcd' }).addTo(map);
+    layerGroupR.current = L.layerGroup().addTo(map);
+    addMarkers(map, markers, onMarkerClick);
     return () => {if (mapR.current) {mapR.current.remove();mapR.current = null;}};
   }, []);
+
+  useEffect(() => {
+    if (!mapR.current || !layerGroupR.current) return;
+    layerGroupR.current.clearLayers();
+    addMarkers(mapR.current, markers, onMarkerClick);
+  }, [markers]);
 
   useEffect(() => {
     if (!mapR.current || !tileR.current) return;
