@@ -1338,19 +1338,22 @@ The map screen shows restaurants from the user's own lists and from friends' lis
 
 ### Pin states
 
+Pins communicate two things simultaneously: **ownership** (mine vs friends) via fill, and **action** (liked vs saved) via icon.
+
 | State | Visual | When |
 |---|---|---|
-| Gostei | Filled ink circle `●` + heart icon (cream) | Someone liked this place — me or a friend |
-| Salvo | Outline ink circle `○` + checkmark icon (ink) | In a list but no positive reaction yet |
-| Selecionado (active) | Filled ink circle + cream ring `◉` | User tapped this pin |
+| Eu gostei | Filled ink `●` + heart icon (cream) | I liked this place |
+| Eu salvei | Filled ink `●` + checkmark icon (cream) | In my list, no positive reaction yet |
+| Amigo gostou | Outline ink `○` + heart icon (ink) | A friend liked this place |
+| Amigo salvou | Outline ink `○` + checkmark icon (ink) | In a friend's list, no reaction yet |
+| Selecionado (active) | Filled or outline + cream ring `◉` | User tapped this pin |
 | Cluster | Filled ink circle + count | Multiple restaurants at the same location |
 
 **Rules:**
 - All pins use `--color-ink` exclusively — cobalt is never used for map pins.
-- Differentiation is by fill (liked = filled, saved = outline), not by colour.
-- Selected pin is the same ink colour but with a `3px --color-cream` ring around it.
+- **Fill = ownership:** filled ink = mine, outline ink = friends'.
+- **Icon = action:** heart = liked, checkmark = saved/in list.
 - **Thumbs down (não gostei) never appears on the map** — negative reactions are private and only visible on the restaurant detail screen.
-- Mine vs friends is handled by filter chips (Todos / Salvos / Amigos gostaram), not by pin style.
 - Cluster pins show a number inside the circle.
 
 ### CSS
@@ -1367,24 +1370,24 @@ The map screen shows restaurants from the user's own lists and from friends' lis
   transition: transform var(--duration-fast) var(--ease-out);
 }
 
-/* Liked — filled ink, heart icon */
-.el-map-pin--liked {
+/* Mine — filled ink */
+.el-map-pin--mine {
   background: var(--color-ink);
   border: 2px solid var(--color-ink);
 }
 
-.el-map-pin--liked svg {
-  color: var(--color-cream);   /* cream heart icon */
+.el-map-pin--mine svg {
+  color: var(--color-cream);   /* cream icon */
 }
 
-/* Saved — outline ink, checkmark icon */
-.el-map-pin--saved {
+/* Friends — outline ink */
+.el-map-pin--friends {
   background: var(--color-bg-page);   /* cream fill */
   border: 2px solid var(--color-ink);
 }
 
-.el-map-pin--saved svg {
-  color: var(--color-ink);   /* ink checkmark icon */
+.el-map-pin--friends svg {
+  color: var(--color-ink);   /* ink icon */
 }
 
 /* Selected */
@@ -1393,30 +1396,43 @@ The map screen shows restaurants from the user's own lists and from friends' lis
   outline-offset: 1px;
   transform: scale(1.15);
 }
+
+/*
+  Icon inside the pin:
+  - Heart SVG  → liked (eu gostei / amigo gostou)
+  - Check SVG  → saved (eu salvei / amigo salvou)
+  Combine with --mine or --friends class.
+  e.g. <div class="el-map-pin el-map-pin--mine"><!-- heart svg --></div>
+       <div class="el-map-pin el-map-pin--friends"><!-- check svg --></div>
+*/
 ```
 
 ### Filter chips
 
 The map has exactly 3 filter chips — no more:
 
-| Chip | Shows |
-|---|---|
-| **Todos** | All pins (mine + friends) |
-| **Salvos** | Only restaurants in my lists |
-| **Amigos gostaram** | Only restaurants friends reacted to |
+| Chip | Shows | Pins visible |
+|---|---|---|
+| **Todos** | Everything | All 4 pin types |
+| **Meus** | Only my restaurants | Filled heart + Filled check |
+| **Amigos** | Only friends' restaurants | Outline heart + Outline check |
 
-"Abertos agora" is not a map filter — remove it. Opening hours are not available in the MVP data model.
+Chips control **ownership**. Pins communicate **action**. The two layers do different jobs and complement each other.
+
+"Abertos agora" and "Amigos gostaram" as separate chips are removed — ownership is now handled by "Meus" and "Amigos".
 
 The active chip uses the standard `tag--active` style (cobalt fill, cream text).
 
 ### Acceptance criteria
-- [ ] Liked pins: filled ink, cream heart icon
-- [ ] Saved pins: outline ink, ink checkmark icon
+- [ ] Mine pins (eu gostei / eu salvei): filled ink, cream icon
+- [ ] Friends pins (amigo gostou / amigo salvou): outline ink, ink icon
+- [ ] Liked places: heart icon inside pin
+- [ ] Saved places: checkmark icon inside pin
 - [ ] Thumbs down places do NOT appear as pins — never
 - [ ] Selected pin has cream outline ring, scale 1.15
 - [ ] Zero cobalt on any pin in any state
-- [ ] Exactly 3 filter chips: Todos, Salvos, Amigos gostaram
-- [ ] "Abertos agora" chip does not exist
+- [ ] Exactly 3 filter chips: Todos, Meus, Amigos
+- [ ] "Todos" shows all 4 pin types; "Meus" shows only filled pins; "Amigos" shows only outline pins
 
 ---
 
