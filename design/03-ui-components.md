@@ -1341,7 +1341,7 @@ The map screen shows restaurants from the user's own lists and from friends' lis
 | State | Visual | When |
 |---|---|---|
 | Gostei | Filled ink circle `●` + heart icon (cream) | Someone liked this place — me or a friend |
-| Salvo | Outline ink circle `○` + bookmark icon (ink) | In a list but no positive reaction yet |
+| Salvo | Outline ink circle `○` + checkmark icon (ink) | In a list but no positive reaction yet |
 | Selecionado (active) | Filled ink circle + cream ring `◉` | User tapped this pin |
 | Cluster | Filled ink circle + count | Multiple restaurants at the same location |
 
@@ -1377,14 +1377,14 @@ The map screen shows restaurants from the user's own lists and from friends' lis
   color: var(--color-cream);   /* cream heart icon */
 }
 
-/* Saved — outline ink, bookmark icon */
+/* Saved — outline ink, checkmark icon */
 .el-map-pin--saved {
   background: var(--color-bg-page);   /* cream fill */
   border: 2px solid var(--color-ink);
 }
 
 .el-map-pin--saved svg {
-  color: var(--color-ink);   /* ink bookmark icon */
+  color: var(--color-ink);   /* ink checkmark icon */
 }
 
 /* Selected */
@@ -1411,7 +1411,7 @@ The active chip uses the standard `tag--active` style (cobalt fill, cream text).
 
 ### Acceptance criteria
 - [ ] Liked pins: filled ink, cream heart icon
-- [ ] Saved pins: outline ink, ink bookmark icon
+- [ ] Saved pins: outline ink, ink checkmark icon
 - [ ] Thumbs down places do NOT appear as pins — never
 - [ ] Selected pin has cream outline ring, scale 1.15
 - [ ] Zero cobalt on any pin in any state
