@@ -1331,7 +1331,184 @@ Inputs use a box-shadow ring instead of outline to avoid clipping inside overflo
 
 ---
 
-## 16. Accessibility — global requirements
+## 16. Map — pins and filter chips
+
+### Purpose
+The map screen shows restaurants from the user's own lists and from friends' lists simultaneously. The visual language must make ownership (mine vs friends') immediately legible without relying on colour beyond the system palette.
+
+### Pin states
+
+| State | Visual | When |
+|---|---|---|
+| Meu (mine) | Filled ink circle `●` | Restaurant is in my lists or I reacted to it |
+| Amigos (friends') | Outline ink circle `○` | Restaurant is in a friend's list or a friend reacted to it |
+| Selecionado (active) | Filled ink circle + cream ring `◉` | User tapped this pin |
+| Cluster | Filled ink circle + count | Multiple restaurants at the same location |
+
+**Rules:**
+- All pins use `--color-ink` exclusively — cobalt is never used for map pins.
+- Differentiation is by fill (filled vs outline), not by colour.
+- Selected pin is the same ink colour but with a `3px --color-cream` ring around it.
+- Cluster pins show a number inside the circle.
+
+### CSS
+
+```css
+.el-map-pin {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+/* Mine — filled */
+.el-map-pin--mine {
+  background: var(--color-ink);
+  border: 2px solid var(--color-ink);
+}
+
+.el-map-pin--mine svg {
+  color: var(--color-cream);
+}
+
+/* Friends — outline */
+.el-map-pin--friends {
+  background: var(--color-bg-page);   /* cream */
+  border: 2px solid var(--color-ink);
+}
+
+.el-map-pin--friends svg {
+  color: var(--color-ink);
+}
+
+/* Selected */
+.el-map-pin--selected {
+  outline: 3px solid var(--color-cream);
+  outline-offset: 1px;
+  transform: scale(1.15);
+}
+```
+
+### Filter chips
+
+The map has exactly 3 filter chips — no more:
+
+| Chip | Shows |
+|---|---|
+| **Todos** | All pins (mine + friends) |
+| **Salvos** | Only restaurants in my lists |
+| **Amigos gostaram** | Only restaurants friends reacted to |
+
+"Abertos agora" is not a map filter — remove it. Opening hours are not available in the MVP data model.
+
+The active chip uses the standard `tag--active` style (cobalt fill, cream text).
+
+### Acceptance criteria
+- [ ] Mine pins: filled ink, cream icon
+- [ ] Friends pins: outline ink, ink icon
+- [ ] Selected pin has cream outline ring, scale 1.15
+- [ ] Zero cobalt on any pin in any state
+- [ ] Exactly 3 filter chips: Todos, Salvos, Amigos gostaram
+- [ ] "Abertos agora" chip does not exist
+
+---
+
+## 17. Reaction — binary
+
+### Purpose
+Users can react to a restaurant to record whether they liked it or not. Reactions are always binary — there is no star rating or gradient. A reaction expresses personal memory, not a public review score.
+
+### States
+
+| State | Icon | Label | Colour |
+|---|---|---|---|
+| Gostei | Heart (filled) `♥` | count | `--color-ink` |
+| Não gostei | X mark `✕` | count | `--color-ink` |
+| Not yet reacted | Both icons outline | — | `--color-text-secondary` |
+
+### HTML structure
+
+```html
+<div class="el-reaction">
+  <button class="el-reaction__btn el-reaction__btn--like" aria-label="Gostei" aria-pressed="false">
+    <svg class="el-reaction__icon" aria-hidden="true"><!-- heart outline --></svg>
+    <span class="el-reaction__count">6</span>
+  </button>
+  <button class="el-reaction__btn el-reaction__btn--dislike" aria-label="Não gostei" aria-pressed="false">
+    <svg class="el-reaction__icon" aria-hidden="true"><!-- x --></svg>
+    <span class="el-reaction__count">1</span>
+  </button>
+</div>
+```
+
+### CSS
+
+```css
+.el-reaction {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.el-reaction__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  height: 32px;
+  border: var(--border-default);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+/* Active — user reacted */
+.el-reaction__btn[aria-pressed="true"] {
+  background: var(--color-bg-surface-muted);
+  border-color: var(--color-border-strong);
+  color: var(--color-text-primary);
+}
+
+.el-reaction__btn--like[aria-pressed="true"] svg {
+  fill: var(--color-text-primary);   /* filled heart */
+}
+
+.el-reaction__icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.el-reaction__count {
+  line-height: 1;
+}
+```
+
+### Rules
+- The heart icon is **always filled** when the user has reacted positively — never outline when active.
+- Reactions use `--color-ink` for the active state — never cobalt.
+- The reaction component is shown on: restaurant detail screen, restaurant card in list (compact version, count only).
+- A user can only have one reaction per restaurant — selecting one deselects the other.
+- Counts reflect all friends who reacted, not just the current user.
+
+### Acceptance criteria
+- [ ] Heart fills ink when user has reacted positively
+- [ ] X mark fills ink when user has reacted negatively
+- [ ] Selecting one reaction deselects the other
+- [ ] No thumbs up / thumbs down icons anywhere in the app — only heart and X
+- [ ] Cobalt is never used for reaction icons or states
+
+---
+
+## 18. Accessibility — global requirements
 
 These apply to every component and every screen. They are not optional.
 
