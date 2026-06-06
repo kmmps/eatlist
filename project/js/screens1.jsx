@@ -299,8 +299,11 @@ const NewListScreen = ({ dark, go, back }) => {
 
   const handleCreate = () => {
     if (!canCreate) return;
+    const newId = Math.max(...window.DATA.lists.map(l => l.id)) + 1;
+    const newList = { id: newId, title: title.trim(), author: 'Você', followers: 0, category: '', img: coverPhoto || '', restaurants: [], description: desc.trim() };
+    window.DATA.lists.push(newList);
     setCreated(true);
-    setTimeout(() => go('home'), 1200);
+    setTimeout(() => go('list-open', { listId: newId }), 1200);
   };
 
   if (created) {
