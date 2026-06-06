@@ -36,7 +36,15 @@ Copie o bloco abaixo e preencha ao final de cada batch de trabalho:
 
 ## Histórico
 
-*(Nenhuma sessão registrada ainda. Quando finalizar tasks no Jira, reporte aqui no Cowork e o changelog será atualizado.)*
+## [v0.1] — 2026-06-05
+
+**Tasks concluídas:** 1.2  
+**Resumo:** Primeiro fix visual — tagline da tela de login agora legível.
+
+### Detalhes
+- **1.2 — Raise login tagline opacity:** Opacidade do tagline "playlists de restaurantes" alterada de ~45% para 72% (rgba(255,255,255,0.72)). Commit: SCRUM-5.
+
+---
 
 ---
 
@@ -47,7 +55,7 @@ Copie o bloco abaixo e preencha ao final de cada batch de trabalho:
 **Status:** 🔲 Não iniciada
 
 ### Onda 1 — Mudanças de uma linha
-- 🔲 SCRUM-5 · [1.2] Raise login tagline opacity
+- ✅ SCRUM-5 · [1.2] Raise login tagline opacity
 - 🔲 SCRUM-6 · [1.1] Bold display-sized titles
 - 🔲 SCRUM-13 · [1.9] Rename "Explorar" section
 
@@ -70,13 +78,13 @@ Copie o bloco abaixo e preencha ao final de cada batch de trabalho:
 ## Estado atual do backlog
 
 **Última atualização:** 2026-06-05  
-**Fase atual:** Sprint 1 planejada, implementação não iniciada  
-**Próximo passo:** Iniciar pela Onda 1 — SCRUM-5, 6, 13
+**Fase atual:** Sprint 1 em andamento  
+**Próximo passo:** SCRUM-6 · [1.1] Bold display-sized titles
 
 | Fase | Total | Concluídas | Restantes |
 | --- | --- | --- | --- |
-| Phase 1 — UX & Content | 15 | 0 | 15 |
+| Phase 1 — UX & Content | 15 | 1 | 14 |
 | Phase 2 — Visual Polish | 10 | 0 | 10 |
 | Phase 3 — Product Flows | 6 | 0 | 6 |
 | Phase 4 — Structural | 5 | 0 | 5 |
-| **Total** | **36** | **0** | **36** |
+| **Total** | **36** | **1** | **35** |

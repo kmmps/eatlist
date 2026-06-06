@@ -194,7 +194,7 @@ const ListOpenScreen = ({ dark, go, back, listId, allLists }) => {
             <div style={{ flex: 1 }}>
               {/* Title + map icon inline */}
               <div style={{ marginBottom: 6 }}>
-                <div style={{ ...ts(30), color: c.text, lineHeight: 1 }}>{list.title}</div>
+                <div style={{ ...ts(30, 600), color: c.text, lineHeight: 1 }}>{list.title}</div>
               </div>
               <div style={{ ...ts(14, 700), color: GRAY }}>Lista de {list.author}</div>
             </div>
@@ -449,7 +449,7 @@ const RestaurantScreen = ({ dark, go, back, restaurantId, allLists }) => {
                 <button onClick={() => setListSheet(true)} style={{ width: 34, height: 34, borderRadius: 100, background: CORAL, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <PlusIc s={15} col="white"/>
                 </button>
-                <span style={{ ...ts(28), color: c.text, lineHeight: 1 }}>{restaurant.name}</span>
+                <span style={{ ...ts(28, 600), color: c.text, lineHeight: 1 }}>{restaurant.name}</span>
               </div>
             </div>
             <MoreIc s={20} col={GRAY}/>
