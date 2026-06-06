@@ -2,36 +2,35 @@
 const { useState, useEffect, useRef } = React;
 
 // ── BottomNav ─────────────────────────────────────────────────────
-const BottomNav = ({ activeTab, onTab, dark }) => {
-  const c = getC(dark);
+const BottomNav = ({ activeTab, onTab }) => {
   const tabs = [
-    { id: 'home',    label: 'Início',   Icon: HomeIc  },
-    { id: 'search',  label: 'Buscar',   Icon: SearchIc },
-    { id: 'map',     label: 'Mapa',     Icon: MapIc   },
-    { id: 'profile', label: 'Perfil',   Icon: UserIc  },
+    { id: 'home',    label: 'Início',  Icon: HomeIc   },
+    { id: 'search',  label: 'Buscar',  Icon: SearchIc  },
+    { id: 'map',     label: 'Mapa',    Icon: MapIc    },
+    { id: 'profile', label: 'Perfil',  Icon: UserIc   },
   ];
   return (
-    <div style={{
-      position: 'absolute', bottom: 0, left: 0, right: 0, height: 82,
-      background: c.bg, borderTop: `1px solid ${c.border}`,
-      display: 'flex', alignItems: 'flex-start', paddingTop: 10,
-      zIndex: 800,
+    <nav aria-label="Navegação principal" style={{
+      position: 'fixed', bottom: 0, left: 0, right: 0,
+      height: 'var(--nav-height-mobile, 56px)',
+      paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+      background: SURFACE, borderTop: `1px solid ${BORDER}`,
+      display: 'flex', alignItems: 'stretch',
+      zIndex: 300,
     }}>
       {tabs.map(({ id, label, Icon }) => {
         const active = activeTab === id;
         return (
-          <button key={id} onClick={() => onTab(id)}
-            style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, border: 'none', background: 'none', cursor: 'pointer', padding: 0 }}>
-            <div style={{ width: 40, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 100, background: active ? `${CORAL}15` : 'transparent', transition: 'background 0.15s' }}>
-              <Icon s={24} col={active ? CORAL : GRAY}/>
-            </div>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, fontWeight: active ? 700 : 400, color: active ? CORAL : GRAY, letterSpacing: '-0.02em' }}>
+          <button key={id} onClick={() => onTab(id)} aria-label={label} aria-current={active ? 'page' : undefined}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, border: 'none', background: 'none', cursor: 'pointer', padding: 0, minHeight: 44, color: active ? INK : SEC_TEXT, transition: `color var(--duration-fast, 150ms)` }}>
+            <Icon s={24} col={active ? INK : SEC_TEXT}/>
+            <span style={{ fontFamily: "var(--font-ui, 'DM Sans', sans-serif)", fontSize: 'var(--text-xs, 11px)', fontWeight: 400, color: active ? INK : SEC_TEXT }}>
               {label}
             </span>
           </button>
         );
       })}
-    </div>
+    </nav>
   );
 };
 
@@ -70,7 +69,7 @@ const ScreenSlide = ({ visible, children }) => {
 const App = () => {
   const [screen,     setScreen]     = useState('splash');
   const [history,    setHistory]    = useState([]);
-  const [dark] = useState(false);
+  const dark = false;
   const [activeTab,  setActiveTab]  = useState('home');
   const [listId,     setListId]     = useState(null);
   const [restaurantId, setRId]      = useState(null);
@@ -130,7 +129,7 @@ const App = () => {
   };
 
   const showNav = !['splash','login'].includes(screen);
-  const props = { dark, go, back, allLists, showFriendActivity: tweaks.showFriendActivity };
+  const props = { go, back, allLists, showFriendActivity: tweaks.showFriendActivity };
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', fontFamily: "'DM Sans', sans-serif" }}>
@@ -167,7 +166,7 @@ const App = () => {
             <RestaurantScreen {...props} restaurantId={restaurantId}/>
           </ScreenSlide>
 
-          <BottomNav activeTab={activeTab} onTab={onTab} dark={dark}/>
+          <BottomNav activeTab={activeTab} onTab={onTab}/>
         </>
       )}
 

@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>eatlist — app para foodies</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -17,6 +19,111 @@
     integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
   <style>
+    /* ── Design Tokens ── */
+    :root {
+      --primitive-ink:           #050615;
+      --primitive-cream:         #F4EFE6;
+      --primitive-white:         #FFFFFF;
+      --primitive-surface-muted: #F0EBE1;
+      --primitive-cobalt:        #1D38C0;
+      --primitive-cobalt-muted:  #E8ECF9;
+      --primitive-warm-gray:     #7A7470;
+      --primitive-border:        #E0D9CF;
+      --primitive-red:           #B5362A;
+
+      --color-bg-page:           var(--primitive-cream);
+      --color-bg-card:           var(--primitive-white);
+      --color-bg-surface-muted:  var(--primitive-surface-muted);
+      --color-text-primary:      var(--primitive-ink);
+      --color-text-secondary:    var(--primitive-warm-gray);
+      --color-text-on-dark:      var(--primitive-white);
+      --color-border-default:    var(--primitive-border);
+      --color-border-focus:      var(--primitive-ink);
+      --color-interactive:       var(--primitive-cobalt);
+      --color-interactive-muted: var(--primitive-cobalt-muted);
+      --color-interactive-text:  var(--primitive-cobalt);
+      --color-destructive:       var(--primitive-red);
+      --color-focus-ring:        var(--primitive-ink);
+
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-ui:      'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+      --font-weight-regular:  400;
+      --font-weight-medium:   500;
+      --font-weight-semibold: 600;
+      --font-weight-bold:     700;
+
+      --text-xs:   11px;
+      --text-sm:   13px;
+      --text-base: 15px;
+      --text-md:   17px;
+      --text-lg:   20px;
+      --text-xl:   24px;
+      --text-2xl:  32px;
+
+      --leading-tight:   1.1;
+      --leading-snug:    1.2;
+      --leading-normal:  1.4;
+      --leading-relaxed: 1.5;
+      --leading-loose:   1.6;
+
+      --space-1:  4px;
+      --space-2:  8px;
+      --space-3:  12px;
+      --space-4:  16px;
+      --space-5:  20px;
+      --space-6:  24px;
+      --space-8:  32px;
+      --space-10: 40px;
+      --space-12: 48px;
+      --space-page-margin:    16px;
+      --space-card-padding:   16px;
+      --space-section-gap:    32px;
+      --space-stack-sm:       8px;
+      --space-stack-md:       16px;
+
+      --radius-none: 0px;
+      --radius-sm:   4px;
+      --radius-md:   8px;
+      --radius-lg:   12px;
+      --radius-xl:   16px;
+      --radius-pill: 9999px;
+
+      --border-default: 1px solid var(--color-border-default);
+      --border-focus:   2px solid var(--color-border-focus);
+
+      --shadow-overlay: 0 8px 24px rgba(5, 6, 21, 0.12);
+      --shadow-sheet:   0 -2px 16px rgba(5, 6, 21, 0.08);
+
+      --duration-fast: 150ms;
+      --duration-base: 250ms;
+      --duration-slow: 400ms;
+      --ease-out:   cubic-bezier(0.0, 0.0, 0.2, 1.0);
+      --ease-in:    cubic-bezier(0.4, 0.0, 1.0, 1.0);
+
+      --z-nav:     300;
+      --z-overlay: 400;
+      --z-modal:   500;
+      --z-toast:   600;
+
+      --nav-height-mobile: 56px;
+      --focus-ring-width:  3px;
+      --focus-ring-offset: 2px;
+    }
+
+    :focus-visible {
+      outline: var(--focus-ring-width) solid var(--color-focus-ring);
+      outline-offset: var(--focus-ring-offset);
+    }
+    :focus:not(:focus-visible) { outline: none; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
@@ -24,11 +131,14 @@
       height: 100%;
       margin: 0;
       padding: 0;
-      font-family: 'DM Sans', sans-serif;
+      font-family: var(--font-ui);
+      -webkit-font-smoothing: antialiased;
     }
 
     body {
-      background: #FFFFFF;
+      background: var(--color-bg-page);
+      color: var(--color-text-primary);
+      padding-bottom: calc(var(--nav-height-mobile) + env(safe-area-inset-bottom, 0px));
     }
 
     #phone-shell {

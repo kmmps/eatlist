@@ -1,69 +1,71 @@
 // eatlist — Shared UI Components
 const { useState, useEffect, useRef } = React;
 
-// ── Tokens ────────────────────────────────────────────────────────
-const CORAL = '#EB6558';
-const DARK = '#050615';
-const GREEN = '#71CC97';
-const GRAY = '#8D9091';
-const LGRAY = '#F4F4F4';
+// ── Design token values (mirrors CSS custom properties) ────────────
+const INK           = '#050615';
+const CREAM         = '#F4EFE6';
+const SURFACE       = '#FFFFFF';
+const SURFACE_MUTED = '#F0EBE1';
+const COBALT        = '#1D38C0';
+const COBALT_MUTED  = '#E8ECF9';
+const SEC_TEXT      = '#7A7470';
+const BORDER        = '#E0D9CF';
+const DESTRUCTIVE   = '#B5362A';
 
-const getC = (dark) => ({
-  bg: dark ? '#05061 5' : '#FFFFFF',
-  surf: dark ? '#1C1B1F' : '#F4F4F4',
-  card: dark ? '#252525' : '#FFFFFF',
-  text: dark ? '#FFFFFF' : '#05061 5',
-  textMed: dark ? '#D0D0D0' : '#3C3736',
-  textSec: '#8D9091',
-  border: dark ? '#2D2D2D' : '#EEEEEE',
-  coral: CORAL, green: GREEN,
-  inputBg: dark ? '#1C1B1F' : '#F4F4F4',
-  pillBg: dark ? '#2D2D2D' : '#FFFFFF',
-  shadow: dark ?
-  '0 2px 8px rgba(0,0,0,0.5)' :
-  '0 2px 4px rgba(0,0,0,0.06),0 4px 6px rgba(0,0,0,0.1)'
+// Legacy aliases kept for map markers and feature-level colors that
+// are not part of the UI chrome (liked/disliked indicators).
+const DARK = INK;
+const GRAY = SEC_TEXT;
+
+const getC = () => ({
+  bg:       CREAM,
+  surf:     SURFACE_MUTED,
+  card:     SURFACE,
+  text:     INK,
+  textSec:  SEC_TEXT,
+  border:   BORDER,
+  cobalt:   COBALT,
+  cobaltMuted: COBALT_MUTED,
+  destructive: DESTRUCTIVE,
 });
 
+// Typography helper — only size/weight/color; no global letter-spacing override
 const ts = (size, weight = 400, color) => ({
-  fontFamily: "'DM Sans', sans-serif",
+  fontFamily: "var(--font-ui, 'DM Sans', sans-serif)",
   fontSize: size,
   fontWeight: weight,
-  letterSpacing: '-0.05em',
-  lineHeight: 1.2,
-  ...(color ? { color } : {})
+  lineHeight: 1.5,
+  ...(color ? { color } : {}),
 });
 
-Object.assign(window, { getC, ts, CORAL, DARK, GREEN, GRAY, LGRAY });
+Object.assign(window, { getC, ts, INK, CREAM, SURFACE, SURFACE_MUTED, COBALT, COBALT_MUTED, SEC_TEXT, BORDER, DESTRUCTIVE, DARK, GRAY, UserRow });
 
 // ── StatusBar ─────────────────────────────────────────────────────
-const StatusBar = ({ dark }) => {
-  const c = getC(dark);
-  return (
-    <div style={{ height: 44, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 28px', flexShrink: 0 }}>
-      <span style={{ ...ts(15, 600), color: c.text }}>9:41</span>
-      <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-        <svg width="17" height="12" viewBox="0 0 17 12">
-          {[0, 1, 2, 3].map((i) =>
-          <rect key={i} x={i * 4.25} y={9 - i * 2.5} width="3.5" height={3 + i * 2.5} rx="0.8" fill={c.text} opacity={0.4 + i * 0.2} />
-          )}
-        </svg>
-        <svg width="16" height="11" viewBox="0 0 16 11" fill="none" stroke={c.text} strokeWidth="1.4" strokeLinecap="round">
-          <path d="M.5 4C3.8.7 12.2.7 15.5 4" /><path d="M3 7c2-2.3 8-2.3 10 0" />
-          <circle cx="8" cy="10" r="1" fill={c.text} stroke="none" />
-        </svg>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div style={{ width: 24, height: 12, border: `1.5px solid ${c.text}60`, borderRadius: 3.5, padding: '1.5px 2px' }}>
-            <div style={{ width: '82%', height: '100%', background: c.text, borderRadius: 2 }} />
-          </div>
-          <div style={{ width: 2, height: 6, background: `${c.text}50`, borderRadius: '0 1.5px 1.5px 0', marginLeft: 1 }} />
+const StatusBar = () => (
+  <div style={{ height: 44, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 28px', flexShrink: 0 }}>
+    <span style={{ ...ts(15, 600), color: INK }}>9:41</span>
+    <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+      <svg width="17" height="12" viewBox="0 0 17 12">
+        {[0, 1, 2, 3].map(i =>
+          <rect key={i} x={i * 4.25} y={9 - i * 2.5} width="3.5" height={3 + i * 2.5} rx="0.8" fill={INK} opacity={0.3 + i * 0.2} />
+        )}
+      </svg>
+      <svg width="16" height="11" viewBox="0 0 16 11" fill="none" stroke={INK} strokeWidth="1.4" strokeLinecap="round">
+        <path d="M.5 4C3.8.7 12.2.7 15.5 4"/><path d="M3 7c2-2.3 8-2.3 10 0"/>
+        <circle cx="8" cy="10" r="1" fill={INK} stroke="none"/>
+      </svg>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ width: 24, height: 12, border: `1.5px solid ${INK}60`, borderRadius: 3.5, padding: '1.5px 2px' }}>
+          <div style={{ width: '82%', height: '100%', background: INK, borderRadius: 2 }}/>
         </div>
+        <div style={{ width: 2, height: 6, background: `${INK}50`, borderRadius: '0 1.5px 1.5px 0', marginLeft: 1 }}/>
       </div>
-    </div>);
-
-};
+    </div>
+  </div>
+);
 
 // ── Logo ──────────────────────────────────────────────────────────
-const AppLogomark = ({ color = DARK, size = 40 }) => (
+const AppLogomark = ({ color = INK, size = 40 }) => (
   <svg width={size} height={size} viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ color }}>
     <path d="M22.5503 51.1206C25.9262 50.5146 29.1724 49.3491 32.5099 48.5743C35.2624 47.9351 37.8459 47.0116 40.5451 46.1848C53.2862 42.2843 51.8814 45.5188 40.4911 35.2055C39.514 34.3205 37.6636 33.7213 37.2672 32.244C36.4855 29.3299 42.2864 19.6016 43.594 17.4493C45.52 14.2803 32.1051 6.5915 29.5623 3.954" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     <path d="M22.1451 50.8673C20.0013 48.2918 17.1909 46.4302 14.689 44.2325C4.40657 35.1995 9.07298 35.1788 13.7174 22.9759C13.8619 22.5951 15.1697 20.4558 15.052 20.0173C14.8624 19.3105 13.5679 19.8497 12.9102 19.5271C8.62132 17.4178 4.88261 14.3768 1.00016 11.7195" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -73,112 +75,126 @@ const AppLogomark = ({ color = DARK, size = 40 }) => (
   </svg>
 );
 
-const EatlistWordmark = ({ dark: isDark = false, size = 'md' }) => {
+const EatlistWordmark = ({ onDark = false, size = 'md' }) => {
   const h = size === 'lg' ? 36 : size === 'sm' ? 22 : 28;
-  const col = isDark ? 'white' : DARK;
+  const col = onDark ? SURFACE : INK;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <AppLogomark color={col} size={h} />
-      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: h * 0.72, fontWeight: 600, color: col, letterSpacing: '-0.03em' }}>eatlist</span>
+      <AppLogomark color={col} size={h}/>
+      <span style={{ fontFamily: "var(--font-ui, 'DM Sans', sans-serif)", fontSize: h * 0.72, fontWeight: 600, color: col, letterSpacing: '-0.02em' }}>eatlist</span>
     </div>
   );
 };
 
 // ── AppHeader ─────────────────────────────────────────────────────
-const AppHeader = ({ dark, onListsOpen, onProfile }) => {
-  const c = getC(dark);
-  return (
-    <div style={{ padding: '0 22px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', background: c.bg, borderBottom: `1px solid ${c.border}` }}>
-      <EatlistWordmark dark={dark} />
-      <div style={{ display: 'flex', gap: 8 }}>
-        <button onClick={onListsOpen} style={{ width: 36, height: 36, borderRadius: 100, background: CORAL, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <PlusIc s={18} col="white" />
-        </button>
-        <button onClick={onProfile} style={{ width: 36, height: 36, borderRadius: 100, overflow: 'hidden', border: `2px solid ${c.border}`, cursor: 'pointer', padding: 0, background: 'none' }}>
-          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&fit=crop&crop=face" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        </button>
-      </div>
-    </div>);
-
-};
+const AppHeader = ({ onListsOpen, onProfile }) => (
+  <div style={{ padding: '0 var(--space-4, 16px)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: CREAM, borderBottom: `1px solid ${BORDER}`, height: 56, flexShrink: 0 }}>
+    <AppLogomark size={32}/>
+    <div style={{ display: 'flex', gap: 8 }}>
+      <button onClick={onListsOpen} aria-label="Nova lista"
+        style={{ width: 44, height: 44, borderRadius: 'var(--radius-md, 8px)', background: INK, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <PlusIc s={18} col={SURFACE}/>
+      </button>
+      <button onClick={onProfile} aria-label="Perfil"
+        style={{ width: 44, height: 44, borderRadius: '50%', overflow: 'hidden', border: `1px solid ${BORDER}`, cursor: 'pointer', padding: 0, background: 'none' }}>
+        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&fit=crop&crop=face" alt="Perfil" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+      </button>
+    </div>
+  </div>
+);
 
 // ── NavHeader (back nav) ──────────────────────────────────────────
-const NavHeader = ({ dark, onBack, title, right }) => {
-  const c = getC(dark);
-  return (
-    <div style={{ padding: '0 24px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: c.bg, borderBottom: `1px solid ${c.border}` }}>
-      <button onClick={onBack} style={{ width: 32, height: 32, border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0 }}>
-        <BackIc s={22} col={c.text} />
-      </button>
-      {title && <span style={{ ...ts(18, 700), color: c.text }}>{title}</span>}
-      <div style={{ width: 32, display: 'flex', justifyContent: 'flex-end' }}>{right || null}</div>
-    </div>);
-
-};
+const NavHeader = ({ onBack, title, right }) => (
+  <div style={{ padding: '0 var(--space-4, 16px)', display: 'flex', alignItems: 'center', height: 56, background: CREAM, borderBottom: `1px solid ${BORDER}`, gap: 8, flexShrink: 0 }}>
+    <button onClick={onBack} aria-label="Voltar"
+      style={{ width: 44, height: 44, border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, borderRadius: 'var(--radius-md, 8px)' }}>
+      <BackIc s={22} col={INK}/>
+    </button>
+    {title && (
+      <span style={{ flex: 1, fontFamily: "var(--font-display, 'Fraunces', Georgia, serif)", fontSize: 'var(--text-xl, 24px)', fontWeight: 300, lineHeight: 1.4, color: INK, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        {title}
+      </span>
+    )}
+    <div style={{ width: 44, display: 'flex', justifyContent: 'flex-end', flexShrink: 0 }}>{right || null}</div>
+  </div>
+);
 
 // ── SearchInput ───────────────────────────────────────────────────
-const SearchInput = ({ dark, value, onChange, onFocus, placeholder = 'Buscar', autoFocus = false }) => {
-  const c = getC(dark);
-  return (
-    <div style={{ position: 'relative' }}>
-      <div style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
-        <SearchIc s={16} col={GRAY} />
-      </div>
-      <input
-        value={value} onChange={(e) => onChange && onChange(e.target.value)}
-        onFocus={onFocus} placeholder={placeholder} autoFocus={autoFocus}
-        style={{ width: '100%', height: 40, background: c.inputBg, border: 'none', borderRadius: 100, paddingLeft: 36, paddingRight: 12, ...ts(14), color: c.text, outline: 'none', caretColor: CORAL }} />
-      
-    </div>);
+const SearchInput = ({ value, onChange, onFocus, placeholder = 'Buscar', autoFocus = false }) => (
+  <div style={{ position: 'relative' }}>
+    <div style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+      <SearchIc s={16} col={SEC_TEXT}/>
+    </div>
+    <input
+      value={value} onChange={e => onChange && onChange(e.target.value)}
+      onFocus={onFocus} placeholder={placeholder} autoFocus={autoFocus}
+      style={{ width: '100%', height: 48, background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 'var(--radius-lg, 12px)', paddingLeft: 36, paddingRight: 12, fontFamily: "var(--font-ui, 'DM Sans', sans-serif)", fontSize: 'var(--text-base, 15px)', color: INK, outline: 'none', caretColor: COBALT }}
+    />
+  </div>
+);
 
-};
-
-// ── Pill / Badge ──────────────────────────────────────────────────
-const Pill = ({ label, active = false, dark, onClick, color }) => {
-  const c = getC(dark);
-  const bg = active ? CORAL : c.surf;
-  const col = active ? 'white' : c.textSec;
+// ── Tag / Chip ────────────────────────────────────────────────────
+// variant: 'default' | 'active' | 'accent' | 'muted'
+const Tag = ({ label, variant = 'default', onClick, compact = false }) => {
+  const styles = {
+    default: { background: 'transparent', border: `1px solid ${BORDER}`,   color: INK      },
+    active:  { background: INK,           border: `1px solid ${INK}`,       color: SURFACE  },
+    accent:  { background: COBALT_MUTED,  border: 'none',                   color: COBALT   },
+    muted:   { background: SURFACE_MUTED, border: 'none',                   color: SEC_TEXT },
+  };
+  const s = styles[variant] || styles.default;
+  const Tag = onClick ? 'button' : 'span';
   return (
-    <button onClick={onClick} style={{ height: 33, padding: '0 14px', borderRadius: 100, background: color || bg, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, ...ts(14, 700), color: color ? 'white' : col }}>
+    <Tag onClick={onClick}
+      style={{ display: 'inline-flex', alignItems: 'center', height: compact ? 22 : 28, padding: `0 ${compact ? 8 : 12}px`, borderRadius: 'var(--radius-pill, 9999px)', fontFamily: "var(--font-ui, 'DM Sans', sans-serif)", fontSize: 'var(--text-xs, 11px)', fontWeight: 500, lineHeight: 1, whiteSpace: 'nowrap', cursor: onClick ? 'pointer' : 'default', border: s.border, background: s.background, color: s.color, transition: `background ${150}ms`, userSelect: 'none' }}>
       {label}
-    </button>);
-
+    </Tag>
+  );
 };
+
+// ── UserRow (el-user-row spec) ────────────────────────────────────
+const UserRow = ({ friend }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 'var(--radius-md, 8px)', minHeight: 64 }}>
+    <img src={friend.avatar} alt={friend.name} width={40} height={40}
+      style={{ width: 40, height: 40, borderRadius: 'var(--radius-pill, 9999px)', objectFit: 'cover', flexShrink: 0 }}/>
+    <span style={{ fontFamily: "var(--font-ui, 'DM Sans', sans-serif)", fontSize: 'var(--text-md, 17px)', fontWeight: 400, color: INK }}>
+      {friend.name}
+    </span>
+  </div>
+);
+
+// Backward-compat pill (used in search/map filters)
+const Pill = ({ label, active = false, onClick }) => (
+  <Tag label={label} variant={active ? 'active' : 'default'} onClick={onClick}/>
+);
 
 // ── ListCard (small, 2-col grid) ──────────────────────────────────
-const ListCard = ({ list, dark, onClick }) => {
-  const c = getC(dark);
-  return (
-    <div onClick={onClick} style={{ width: 158, flexShrink: 0, cursor: 'pointer' }}>
-      <div style={{ width: 158, height: 158, borderRadius: 16, overflow: 'hidden', background: c.surf, marginBottom: 8 }}>
-        <img src={list.img} alt={list.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
-      </div>
-      <div style={{ ...ts(18, 500), color: c.text, lineHeight: 1.1, marginBottom: 4 }}>{list.title}</div>
-      <div style={{ ...ts(14), color: GRAY }}>{list.author}</div>
-    </div>);
+const ListCard = ({ list, onClick }) => (
+  <div onClick={onClick} style={{ width: 158, flexShrink: 0, cursor: 'pointer' }}>
+    <div style={{ width: 158, height: 158, borderRadius: 'var(--radius-md, 8px)', overflow: 'hidden', background: SURFACE_MUTED, marginBottom: 8, border: `1px solid ${BORDER}` }}>
+      <img src={list.img} alt={list.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy"/>
+    </div>
+    <div style={{ fontFamily: "var(--font-ui)", fontSize: 'var(--text-base, 15px)', fontWeight: 500, color: INK, lineHeight: 1.4, marginBottom: 4 }}>{list.title}</div>
+    <div style={{ fontFamily: "var(--font-ui)", fontSize: 'var(--text-sm, 13px)', color: SEC_TEXT }}>{list.author}</div>
+  </div>
+);
 
-};
-
-// ── ListCardHorizontal (in search / profile) ──────────────────────
-const ListCardHoriz = ({ list, dark, onClick }) => {
-  const c = getC(dark);
-  return (
-    <div onClick={onClick} style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '12px 0', cursor: 'pointer', borderBottom: `1px solid ${c.border}` }}>
-      <div style={{ width: 56, height: 56, borderRadius: 10, overflow: 'hidden', flexShrink: 0, background: c.surf }}>
-        <img src={list.img} alt={list.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
-      </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ ...ts(16, 500), color: c.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{list.title}</div>
-        <div style={{ ...ts(13), color: GRAY }}>{list.author} · {list.followers} seguidores</div>
-      </div>
-      <ArrowRightIc s={18} col={GRAY} />
-    </div>);
-
-};
+// ── ListCardHorizontal ────────────────────────────────────────────
+const ListCardHoriz = ({ list, onClick }) => (
+  <div onClick={onClick} style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '12px 0', cursor: 'pointer', borderBottom: `1px solid ${BORDER}` }}>
+    <div style={{ width: 56, height: 56, borderRadius: 'var(--radius-md, 8px)', overflow: 'hidden', flexShrink: 0, background: SURFACE_MUTED, border: `1px solid ${BORDER}` }}>
+      <img src={list.img} alt={list.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy"/>
+    </div>
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ fontFamily: "var(--font-ui)", fontSize: 'var(--text-base, 15px)', fontWeight: 500, color: INK, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{list.title}</div>
+      <div style={{ fontFamily: "var(--font-ui)", fontSize: 'var(--text-sm, 13px)', color: SEC_TEXT }}>{list.author} · {list.followers} seguidores</div>
+    </div>
+    <ArrowRightIc s={18} col={SEC_TEXT}/>
+  </div>
+);
 
 // ── RestaurantCard (in list-open) ─────────────────────────────────
-const RestaurantCard = ({ restaurant, dark, onOpen, onPlusClick, onLikesClick }) => {
-  const c = getC(dark);
+const RestaurantCard = ({ restaurant, onOpen, onPlusClick, onLikesClick }) => {
   const friends = window.DATA.friends;
   const lpTimer = useRef(null);
 
@@ -190,21 +206,19 @@ const RestaurantCard = ({ restaurant, dark, onOpen, onPlusClick, onLikesClick })
 
   const LikesBadge = ({ type, count }) => {
     if (count === 0) return null;
-    const col = type === 'up' ? GREEN : CORAL;
+    const col = type === 'up' ? COBALT : DESTRUCTIVE;
     const avatars = friends.slice(0, Math.min(count, 3));
     return (
       <div
-        onPointerDown={e => startLP(type, e)}
-        onPointerUp={e => { e.stopPropagation(); cancelLP(); }}
-        onPointerLeave={cancelLP}
-        onContextMenu={e => e.preventDefault()}
-        style={{ display: 'flex', alignItems: 'center', gap: 5, background: c.bg, borderRadius: 100, padding: '5px 10px', cursor: 'pointer', userSelect: 'none' }}>
+        onPointerDown={e => startLP(type, e)} onPointerUp={e => { e.stopPropagation(); cancelLP(); }}
+        onPointerLeave={cancelLP} onContextMenu={e => e.preventDefault()}
+        style={{ display: 'flex', alignItems: 'center', gap: 5, background: CREAM, border: `1px solid ${BORDER}`, borderRadius: 'var(--radius-pill, 9999px)', padding: '5px 10px', cursor: 'pointer', userSelect: 'none' }}>
         {type === 'up' ? <ThumbUpIc s={13} col={col}/> : <ThumbDownIc s={13} col={col}/>}
-        <span style={{ ...ts(13, 700), color: GRAY }}>{count}</span>
+        <span style={{ fontFamily: "var(--font-ui)", fontSize: 'var(--text-xs, 11px)', fontWeight: 600, color: SEC_TEXT }}>{count}</span>
         {avatars.length > 0 && (
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {avatars.map((f, i) => (
-              <img key={f.id} src={f.avatar} style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover', border: `1.5px solid ${c.surf}`, marginLeft: i === 0 ? 2 : -5, position: 'relative', zIndex: avatars.length - i }}/>
+              <img key={f.id} src={f.avatar} alt={f.name} style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover', border: `1.5px solid ${SURFACE}`, marginLeft: i === 0 ? 2 : -5, position: 'relative', zIndex: avatars.length - i }}/>
             ))}
           </div>
         )}
@@ -213,42 +227,42 @@ const RestaurantCard = ({ restaurant, dark, onOpen, onPlusClick, onLikesClick })
   };
 
   return (
-    <div onClick={onOpen} style={{ background: c.surf, borderRadius: 16, padding: '20px 20px 18px', cursor: 'pointer' }}>
+    <article onClick={onOpen} style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 'var(--radius-md, 8px)', padding: 'var(--space-4, 16px)', cursor: 'pointer', transition: `background ${150}ms` }}
+      onMouseEnter={e => e.currentTarget.style.background = SURFACE_MUTED}
+      onMouseLeave={e => e.currentTarget.style.background = SURFACE}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 8 }}>
-        <button onClick={e => { e.stopPropagation(); onPlusClick && onPlusClick(); }}
-          style={{ width: 32, height: 32, borderRadius: 100, background: CORAL, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <PlusIc s={15} col="white"/>
+        <button onClick={e => { e.stopPropagation(); onPlusClick && onPlusClick(); }} aria-label="Adicionar a lista"
+          style={{ width: 32, height: 32, borderRadius: 'var(--radius-md, 8px)', background: INK, border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <PlusIc s={14} col={SURFACE}/>
         </button>
         <div style={{ flex: 1 }}>
-          <div style={{ ...ts(20, 500), color: c.text, lineHeight: 1.1 }}>{restaurant.name}</div>
+          <h3 style={{ fontFamily: "var(--font-ui)", fontSize: 'var(--text-md, 17px)', fontWeight: 600, color: INK, lineHeight: 1.5, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{restaurant.name}</h3>
         </div>
-        <ArrowRightIc s={18} col={GRAY}/>
+        <ArrowRightIc s={18} col={SEC_TEXT}/>
       </div>
-      <div style={{ ...ts(13), color: GRAY, marginBottom: 10, paddingLeft: 44 }}>{restaurant.address}</div>
+      <div style={{ fontFamily: "var(--font-ui)", fontSize: 'var(--text-sm, 13px)', color: SEC_TEXT, marginBottom: 10, paddingLeft: 44 }}>{restaurant.address}</div>
       <div style={{ display: 'flex', gap: 8, paddingLeft: 44 }}>
         <LikesBadge type="up" count={restaurant.friendsLiked}/>
         <LikesBadge type="down" count={restaurant.friendsDisliked}/>
       </div>
-    </div>
+    </article>
   );
 };
 
 // ── LeafletMap ────────────────────────────────────────────────────
-const LeafletMap = ({ dark, center, zoom = 14, markers = [], onMarkerClick, style: mapStyle = {}, activeFilter = 'Todos' }) => {
+const LeafletMap = ({ center, zoom = 14, markers = [], onMarkerClick, style: mapStyle = {} }) => {
   const ref = useRef(null);
   const mapR = useRef(null);
   const tileR = useRef(null);
   const layerGroupR = useRef(null);
 
-  const tileUrl = (d) => d ?
-  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' :
-  'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+  const tileUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 
   const addMarkers = (map, mkList, clickHandler) => {
-    mkList.forEach((m) => {
+    mkList.forEach(m => {
       const isSaved = m.saved;
       const isFriend = !isSaved && m.friendsLiked > 0;
-      const bg = isSaved ? CORAL : isFriend ? '#050615' : '#8D9091';
+      const bg = isSaved ? INK : isFriend ? COBALT : SEC_TEXT;
       const iconSvg = isSaved
         ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`
         : isFriend
@@ -256,8 +270,8 @@ const LeafletMap = ({ dark, center, zoom = 14, markers = [], onMarkerClick, styl
         : `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>`;
       const icon = L.divIcon({
         className: '',
-        html: `<div style="width:32px;height:32px;background:${bg};border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.35);cursor:pointer;">${iconSvg}</div>`,
-        iconSize: [32, 32], iconAnchor: [16, 16]
+        html: `<div style="width:32px;height:32px;background:${bg};border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(5,6,21,0.25);cursor:pointer;">${iconSvg}</div>`,
+        iconSize: [32, 32], iconAnchor: [16, 16],
       });
       const mk = L.marker([m.lat, m.lng], { icon }).addTo(layerGroupR.current);
       if (clickHandler) mk.on('click', () => clickHandler(m));
@@ -268,10 +282,10 @@ const LeafletMap = ({ dark, center, zoom = 14, markers = [], onMarkerClick, styl
     if (!ref.current || mapR.current) return;
     const map = L.map(ref.current, { zoomControl: false, attributionControl: false }).setView(center, zoom);
     mapR.current = map;
-    tileR.current = L.tileLayer(tileUrl(dark), { maxZoom: 19, subdomains: 'abcd' }).addTo(map);
+    tileR.current = L.tileLayer(tileUrl, { maxZoom: 19, subdomains: 'abcd' }).addTo(map);
     layerGroupR.current = L.layerGroup().addTo(map);
     addMarkers(map, markers, onMarkerClick);
-    return () => {if (mapR.current) {mapR.current.remove();mapR.current = null;}};
+    return () => { if (mapR.current) { mapR.current.remove(); mapR.current = null; } };
   }, []);
 
   useEffect(() => {
@@ -280,96 +294,68 @@ const LeafletMap = ({ dark, center, zoom = 14, markers = [], onMarkerClick, styl
     addMarkers(mapR.current, markers, onMarkerClick);
   }, [markers]);
 
-  useEffect(() => {
-    if (!mapR.current || !tileR.current) return;
-    mapR.current.removeLayer(tileR.current);
-    tileR.current = L.tileLayer(tileUrl(dark), { maxZoom: 19, subdomains: 'abcd' }).addTo(mapR.current);
-  }, [dark]);
-
-  return <div ref={ref} style={{ width: '100%', height: '100%', ...mapStyle }} />;
+  return <div ref={ref} style={{ width: '100%', height: '100%', ...mapStyle }}/>;
 };
 
-// ── MiniMap (static preview) ──────────────────────────────────────
-const MiniMap = ({ dark, markers, onClick, style: s = {} }) => {
+// ── MiniMap ───────────────────────────────────────────────────────
+const MiniMap = ({ markers, onClick, style: s = {} }) => {
   const mapId = useRef(`minimap-${Math.random().toString(36).slice(2)}`);
   const mapR = useRef(null);
-  const tileR = useRef(null);
-  const tileUrl = (d) => d ?
-  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' :
-  'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 
   useEffect(() => {
     const el = document.getElementById(mapId.current);
     if (!el || mapR.current) return;
     const map = L.map(el, { zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false, touchZoom: false }).setView([-23.5505, -46.6333], 13);
     mapR.current = map;
-    tileR.current = L.tileLayer(tileUrl(dark), { maxZoom: 19, subdomains: 'abcd' }).addTo(map);
-    (markers || []).forEach((m) => {
-      const icon = L.divIcon({ className: '', html: `<div style="width:20px;height:20px;background:${CORAL};border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.3);"></div>`, iconSize: [20, 20], iconAnchor: [10, 10] });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19, subdomains: 'abcd' }).addTo(map);
+    (markers || []).forEach(m => {
+      const icon = L.divIcon({ className: '', html: `<div style="width:20px;height:20px;background:${INK};border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(5,6,21,0.3);"></div>`, iconSize: [20, 20], iconAnchor: [10, 10] });
       L.marker([m.lat, m.lng], { icon }).addTo(map);
     });
-    return () => {if (mapR.current) {mapR.current.remove();mapR.current = null;}};
+    return () => { if (mapR.current) { mapR.current.remove(); mapR.current = null; } };
   }, []);
 
-  useEffect(() => {
-    if (!mapR.current || !tileR.current) return;
-    mapR.current.removeLayer(tileR.current);
-    tileR.current = L.tileLayer(tileUrl(dark), { maxZoom: 19, subdomains: 'abcd' }).addTo(mapR.current);
-  }, [dark]);
-
-  return <div id={mapId.current} onClick={onClick} style={{ width: '100%', height: '100%', cursor: 'pointer', ...s }} />;
+  return <div id={mapId.current} onClick={onClick} style={{ width: '100%', height: '100%', cursor: 'pointer', ...s }}/>;
 };
 
 // ── FriendRow ─────────────────────────────────────────────────────
-const FriendRow = ({ friend, dark }) => {
-  const c = getC(dark);
-  return (
-    <div style={{ display: 'flex', gap: 12, alignItems: 'center', padding: '12px', background: c.surf, borderRadius: 14 }}>
-      <img src={friend.avatar} style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }} />
-      <span style={{ ...ts(17), color: c.text, flex: 1 }}>{friend.name}</span>
-      <ArrowRightIc s={16} col={GRAY} />
-    </div>);
+const FriendRow = ({ friend }) => (
+  <div style={{ display: 'flex', gap: 12, alignItems: 'center', padding: 'var(--space-3, 12px)', background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 'var(--radius-md, 8px)' }}>
+    <img src={friend.avatar} alt={friend.name} style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }}/>
+    <span style={{ fontFamily: "var(--font-ui)", fontSize: 'var(--text-base, 15px)', color: INK, flex: 1 }}>{friend.name}</span>
+    <ArrowRightIc s={16} col={SEC_TEXT}/>
+  </div>
+);
 
-};
-
-// ── FeedCard (friend activity) ────────────────────────────────────
-const FeedCard = ({ item, list, dark, go, isLast }) => {
-  const c = getC(dark);
-  const [following, setFollowing] = useState(item.following || false);
-  return (
-    <div style={{ paddingBottom: 24, marginBottom: 24, borderBottom: isLast ? 'none' : `1px solid ${c.border}` }}>
-      {/* Author row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-        <img src={item.friend.avatar} style={{ width: 42, height: 42, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-        <div>
-          <div style={{ ...ts(15, 700), color: c.text, fontWeight: "400" }}>{item.friend.name}</div>
-          <div style={{ ...ts(12), color: GRAY }}>{item.action} · {item.time} · seguindo</div>
-        </div>
+// ── FeedCard ──────────────────────────────────────────────────────
+const FeedCard = ({ item, list, go, isLast }) => (
+  <div style={{ paddingBottom: 24, marginBottom: 24, borderBottom: isLast ? 'none' : `1px solid ${BORDER}` }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+      <img src={item.friend.avatar} alt={item.friend.name} style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}/>
+      <div>
+        <div style={{ fontFamily: "var(--font-ui)", fontSize: 'var(--text-base, 15px)', fontWeight: 500, color: INK }}>{item.friend.name}</div>
+        <div style={{ fontFamily: "var(--font-ui)", fontSize: 'var(--text-xs, 11px)', color: SEC_TEXT }}>{item.action} · {item.time}</div>
       </div>
-      {/* List title + description */}
-      <div onClick={() => go('list-open', { listId: list.id })} style={{ cursor: 'pointer', marginBottom: 14 }}>
-        <div style={{ ...ts(22, 700), color: c.text, lineHeight: 1.1, marginBottom: 6, fontWeight: "400" }}>{list.title}</div>
-
-      </div>
-
-      {/* Restaurant photos */}
-      <div style={{ display: 'flex', gap: 10 }}>
-        {list.restaurants.slice(0, 2).map((r) =>
+    </div>
+    <div onClick={() => go('list-open', { listId: list.id })} style={{ cursor: 'pointer', marginBottom: 14 }}>
+      <div style={{ fontFamily: "var(--font-display, 'Fraunces', Georgia, serif)", fontSize: 'var(--text-xl, 24px)', fontWeight: 300, color: INK, lineHeight: 1.4, marginBottom: 4 }}>{list.title}</div>
+    </div>
+    <div style={{ display: 'flex', gap: 10 }}>
+      {list.restaurants.slice(0, 2).map(r =>
         <div key={r.id} onClick={() => go('restaurant', { restaurantId: r.id })}
-        style={{ flex: 1, height: 128, borderRadius: 14, overflow: 'hidden', position: 'relative', cursor: 'pointer' }}>
-            <img src={r.photo || list.img} alt={r.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)' }} />
-            <span style={{ position: 'absolute', bottom: 8, left: 10, ...ts(13, 600), color: 'white', textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>{r.name}</span>
-          </div>
-        )}
-      </div>
-    </div>);
-
-};
+          style={{ flex: 1, height: 120, borderRadius: 'var(--radius-md, 8px)', overflow: 'hidden', position: 'relative', cursor: 'pointer', border: `1px solid ${BORDER}` }}>
+          <img src={r.photo || list.img} alt={r.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(5,6,21,0.6) 0%, transparent 55%)' }}/>
+          <span style={{ position: 'absolute', bottom: 8, left: 10, fontFamily: "var(--font-ui)", fontSize: 'var(--text-xs, 11px)', fontWeight: 600, color: 'white' }}>{r.name}</span>
+        </div>
+      )}
+    </div>
+  </div>
+);
 
 Object.assign(window, {
   StatusBar, AppLogomark, EatlistWordmark,
-  AppHeader, NavHeader, SearchInput, Pill,
+  AppHeader, NavHeader, SearchInput, Tag, Pill,
   ListCard, ListCardHoriz, RestaurantCard,
-  LeafletMap, MiniMap, FriendRow, FeedCard
+  LeafletMap, MiniMap, FriendRow, FeedCard,
 });
