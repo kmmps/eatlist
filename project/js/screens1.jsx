@@ -115,8 +115,7 @@ const HomeScreen = ({ dark, go, allLists, showFriendActivity }) => {
         {/* Mapa section */}
         <div style={{ marginBottom: 24 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <span style={{ ...ts(16, 500), color: c.text }}>Explorar
-</span>
+            <span style={{ ...ts(16, 500), color: c.text }}>Mapa</span>
             <button onClick={() => go('map')} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4 }}>
               <ArrowRightIc s={20} col={GRAY} />
             </button>
@@ -130,9 +129,9 @@ const HomeScreen = ({ dark, go, allLists, showFriendActivity }) => {
               <ChevronDownIc s={12} col={GRAY} />
             </div>
             {/* List button overlay */}
-            <button onClick={(e) => {e.stopPropagation();go('lists');}} style={{ position: 'absolute', bottom: 12, right: 12, background: DARK, border: 'none', borderRadius: 100, padding: '7px 14px', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', zIndex: 500 }}>
+            <button onClick={(e) => {e.stopPropagation();go('map');}} style={{ position: 'absolute', bottom: 12, right: 12, background: DARK, border: 'none', borderRadius: 100, padding: '7px 14px', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', zIndex: 500 }}>
               <ListIc s={13} col="white" />
-              <span style={{ ...ts(13, 700), color: 'white' }}>Ver listas</span>
+              <span style={{ ...ts(13, 700), color: 'white' }}>Ver no mapa</span>
             </button>
           </div>
         </div>
