@@ -446,7 +446,10 @@ const RestaurantScreen = ({ dark, go, back, restaurantId, allLists }) => {
     <div style={{ position: 'absolute', inset: 0, background: c.bg, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <StatusBar dark={dark}/>
       <NavHeader dark={dark} onBack={back} right={
-        <button onClick={() => {}} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 2 }}>
+        <button onClick={() => {
+          if (navigator.share) { navigator.share({ title: restaurant.name, url: window.location.href }); }
+          else { navigator.clipboard.writeText(window.location.href); setToast('Link copiado!'); toastTimer.current = setTimeout(() => setToast(null), 2500); }
+        }} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 2 }}>
           <ShareIc s={20} col={GRAY}/>
         </button>
       }/>
@@ -637,16 +640,25 @@ const ProfileScreen = ({ dark, go, back, allLists }) => {
   const c    = getC(dark);
   const user = window.DATA.user;
   const [tab, setTab] = useState('listas');
+  const [shareToast, setShareToast] = useState(false);
   const myLists = allLists.filter(l => user.myListIds.includes(l.id));
 
   return (
     <div style={{ position: 'absolute', inset: 0, background: c.bg, display: 'flex', flexDirection: 'column' }}>
       <StatusBar dark={dark}/>
       <NavHeader dark={dark} onBack={back} right={
-        <button onClick={() => {}} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 2 }}>
+        <button onClick={() => {
+          if (navigator.share) { navigator.share({ title: user.name, url: window.location.href }); }
+          else { navigator.clipboard.writeText(window.location.href); setShareToast(true); setTimeout(() => setShareToast(false), 2500); }
+        }} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 2 }}>
           <ShareIc s={20} col={GRAY}/>
         </button>
       }/>
+      {shareToast && (
+        <div style={{ position: 'absolute', bottom: 100, left: '50%', transform: 'translateX(-50%)', background: DARK, borderRadius: 100, padding: '10px 20px', zIndex: 900 }}>
+          <span style={{ ...ts(14, 700), color: 'white', whiteSpace: 'nowrap' }}>Link copiado!</span>
+        </div>
+      )}
 
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {/* Profile header */}
