@@ -143,10 +143,28 @@ A handwritten or expressive script may appear in campaign assets, social, and la
 --font-weight-bold:     700
 ```
 
+### Heading hierarchy
+
+There are two distinct heading roles in the product. They must look different.
+
+**Section label** — identifies a group of content on a screen (e.g. "Seus amigos", "Mapa", "Adicionados recentemente"). It is navigation/wayfinding text — the user reads it to orient themselves, not to engage with it.
+- Font: DM Sans, `--font-weight-semibold`
+- Size: `--text-sm` (13px)
+- Colour: `--color-text-secondary`
+- Transform: uppercase, `letter-spacing: 0.08em`
+
+**Content title** — the name or headline of a piece of content (e.g. a list name, a restaurant name in a detail header, an empty state headline). The user engages with this directly.
+- Font: Fraunces, regular
+- Size: `--text-xl` (24px) for list/section titles; `--text-2xl` (32px) for screen-level titles
+- Colour: `--color-ink`
+
+> **Rule:** section labels shrink and step back. Content titles occupy space. The visual contrast between the two must be immediately legible.
+
 ### Usage guidance
 
 - Restaurant name in list card: `--text-md`, DM Sans, `--font-weight-semibold`
-- Section headers: `--text-xl`, Fraunces, regular
+- Section label (e.g. "Seus amigos"): `--text-sm`, DM Sans, `--font-weight-semibold`, uppercase, `--color-text-secondary`
+- Content title (e.g. list name, screen heading): `--text-xl` or `--text-2xl`, Fraunces, regular
 - Body / notes field: `--text-base`, DM Sans, regular
 - Metadata (cuisine type, neighbourhood): `--text-sm`, DM Sans, regular, `--color-text-secondary`
 - Buttons / CTAs: `--text-sm`, DM Sans, `--font-weight-semibold`

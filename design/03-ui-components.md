@@ -695,7 +695,7 @@ Single-line text fields for restaurant name, location, list name, and search.
   padding: 0 var(--space-3);           /* 0 12px */
   background: var(--color-bg-card);    /* white */
   border: var(--border-default);
-  border-radius: var(--radius-sm);     /* 4px — intentionally smaller than buttons */
+  border-radius: var(--radius-md);     /* 8px — standard form inputs */
   font-family: var(--font-ui);
   font-size: var(--text-base);
   font-weight: var(--font-weight-regular);
@@ -736,6 +736,13 @@ Single-line text fields for restaurant name, location, list name, and search.
   border-color: var(--color-border-default);
   cursor: not-allowed;
   opacity: 1;  /* don't reduce opacity — muted background communicates disabled */
+}
+
+/* Search variant */
+.el-input--search {
+  border-radius: var(--radius-lg);   /* 12px — rounder, more approachable than form inputs */
+  padding-left: var(--space-6);      /* 24px — leaves room for the search icon */
+  background-image: none;            /* icon is a sibling element, not a background */
 }
 
 /* Error message */
@@ -939,7 +946,8 @@ body {
 - [ ] Labels are visible in all states (active and inactive)
 - [ ] Active tab has `aria-current="page"` attribute
 - [ ] Max 5 tab items
-- [ ] Body has `padding-bottom` to prevent content hiding behind the bar
+- [ ] `body` has `padding-bottom: calc(var(--nav-height-mobile) + env(safe-area-inset-bottom, 0px))` — content must never be hidden behind the bar
+- [ ] No visible gap between the bar and the bottom edge of the screen on any device (the bar must touch the physical bottom edge, with only the safe-area inset between them)
 
 ---
 
@@ -1028,7 +1036,256 @@ Screen-level navigation: back button, screen title, and optional close or action
 
 ---
 
-## 12. Focus ring — global
+## 12. Navigation — Home header
+
+### Purpose
+The top bar of the main list screen (home). Shows the Eatlist logomark only — no page title, no wordmark text as a separate element. The logomark is the full brand presence on this screen.
+
+### Anatomy
+```
+┌─────────────────────────────────────────┐  ← el-home-header
+│  [logomark svg]                [action] │
+└─────────────────────────────────────────┘
+```
+
+### HTML structure
+```html
+<header class="el-home-header">
+  <img
+    class="el-home-header__logo"
+    src="/assets/logomark.svg"
+    alt="Eatlist"
+    width="32"
+    height="32"
+  >
+  <!-- optional trailing action, e.g. notifications -->
+  <button class="el-home-header__action el-btn-icon" aria-label="Notifications">
+    <svg aria-hidden="true" ...></svg>
+  </button>
+</header>
+```
+
+### CSS
+
+```css
+.el-home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-4);
+  height: 56px;
+  background: var(--color-bg-page);
+  border-bottom: var(--border-default);
+}
+
+.el-home-header__logo {
+  width: 32px;
+  height: 32px;
+  display: block;
+  flex-shrink: 0;
+}
+```
+
+### Rules
+- **Only the logomark SVG** (`logomark.svg`) is used here — never the full wordmark lockup and never a text element reading "Eatlist" beside the logo.
+- No `<h1>` or page title on the home header — the list content below provides context.
+- Height is 56px — same as `el-screen-header` and `el-tab-bar`.
+
+### Acceptance criteria
+- [ ] Only `logomark.svg` is present — no text label adjacent to it
+- [ ] `alt="Eatlist"` on the img element
+- [ ] Height is 56px
+- [ ] No `<h1>` page title in this header
+
+---
+
+## 13. User row
+
+### Purpose
+Displays a single person (friend, follower, contributor) with their avatar and name. Used in friend lists, "Amigos que seguem", "Amigos que gostaram", and anywhere a list of people appears.
+
+### Anatomy
+```
+┌─────────────────────────────────────────┐  ← el-user-row
+│  [avatar]  Name                          │
+└─────────────────────────────────────────┘
+```
+
+### HTML structure
+```html
+<ul class="el-user-list">
+  <li>
+    <div class="el-user-row">
+      <img
+        class="el-user-row__avatar"
+        src="/path/to/avatar.jpg"
+        alt="Isabela Kempinas"
+        width="40"
+        height="40"
+      >
+      <span class="el-user-row__name">Isabela Kempinas</span>
+    </div>
+  </li>
+</ul>
+```
+
+### CSS
+
+```css
+.el-user-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);   /* 8px between rows */
+}
+
+.el-user-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);            /* 12px */
+  padding: var(--space-3) var(--space-4);   /* 12px 16px */
+  background: var(--color-bg-card);
+  border: var(--border-default);
+  border-radius: var(--radius-md);
+  min-height: 64px;
+}
+
+.el-user-row__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);   /* always circular */
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.el-user-row__name {
+  font-family: var(--font-ui);
+  font-size: var(--text-md);           /* 17px */
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-primary);
+}
+```
+
+### Rules
+- Every list of people (regardless of context) uses `el-user-row` — never invent a separate treatment.
+- Avatar is always circular (`--radius-pill`).
+- Row always has the card-with-border treatment — never a bare list without container.
+
+### Acceptance criteria
+- [ ] Avatar is 40px × 40px, circular, `object-fit: cover`
+- [ ] Row has `border: var(--border-default)` and `border-radius: var(--radius-md)`
+- [ ] Name uses `--font-ui`, `--text-md`
+- [ ] All people lists across the app use this component
+
+---
+
+## 14. Bottom sheet
+
+### Purpose
+A modal surface that slides up from the bottom. Used for contextual actions, detail previews, filter panels, and people lists ("Amigos que seguem"). Never a full replacement for a screen — use a screen instead if the content requires its own navigation.
+
+### Anatomy
+```
+        ┌──────────────────────────────┐
+        │    ────  (drag handle)       │
+        │                              │
+        │  Title              [close]  │
+        │                              │
+        │  [content]                   │
+        │                              │
+        └──────────────────────────────┘
+```
+
+### HTML structure
+```html
+<div class="el-sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+  <div class="el-sheet__handle" aria-hidden="true"></div>
+  <header class="el-sheet__header">
+    <h2 class="el-sheet__title" id="sheet-title">Amigos que seguem</h2>
+    <button class="el-sheet__close el-btn-icon" aria-label="Close">
+      <svg aria-hidden="true" ...><!-- × --></svg>
+    </button>
+  </header>
+  <div class="el-sheet__body">
+    <!-- scrollable content goes here -->
+  </div>
+</div>
+```
+
+### CSS
+
+```css
+.el-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-modal);            /* 500 */
+  display: flex;
+  flex-direction: column;
+  max-height: 90dvh;                  /* never taller than 90% of viewport */
+  background: var(--color-bg-page);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;  /* 16px top corners only */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  overflow: hidden;
+}
+
+.el-sheet__handle {
+  width: 36px;
+  height: 4px;
+  background: var(--color-border-default);
+  border-radius: var(--radius-pill);
+  margin: var(--space-2) auto var(--space-1);  /* 8px auto 4px */
+  flex-shrink: 0;
+}
+
+.el-sheet__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);   /* 12px 16px */
+  flex-shrink: 0;
+}
+
+.el-sheet__title {
+  font-family: var(--font-display);   /* Fraunces */
+  font-size: var(--text-xl);          /* 24px */
+  font-weight: 300;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.el-sheet__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-2) var(--space-4) var(--space-6);  /* 8px 16px 24px */
+  -webkit-overflow-scrolling: touch;
+}
+```
+
+### Rules
+- Height is **always** `height: auto` — the sheet grows to fit its content, up to `max-height: 90dvh`.
+- Never set a fixed `height` or `min-height` that creates empty space below short content.
+- If content exceeds `90dvh`, `el-sheet__body` scrolls internally.
+- `padding-bottom: env(safe-area-inset-bottom)` prevents content from being clipped by the home indicator on notched devices.
+- The drag handle is always present — it's an affordance even if drag-to-dismiss isn't implemented.
+- Title uses Fraunces `--text-xl` — consistent with all content headings.
+
+### Acceptance criteria
+- [ ] `height: auto` — sheet fits content, no empty space below
+- [ ] `max-height: 90dvh`
+- [ ] `el-sheet__body` scrolls when content overflows
+- [ ] Drag handle visible at top
+- [ ] `border-radius: var(--radius-xl) var(--radius-xl) 0 0` — top corners rounded only
+- [ ] `padding-bottom: env(safe-area-inset-bottom)` on the sheet root
+- [ ] `z-index: var(--z-modal)` (500)
+- [ ] `role="dialog"` and `aria-modal="true"` on root element
+
+---
+
+## 15. Focus ring — global
 
 ### Purpose
 Visible keyboard focus indicator. Applied globally via `tokens.css`. Never removed. Never replaced with a colour-only indicator.
@@ -1074,7 +1331,7 @@ Inputs use a box-shadow ring instead of outline to avoid clipping inside overflo
 
 ---
 
-## 13. Accessibility — global requirements
+## 16. Accessibility — global requirements
 
 These apply to every component and every screen. They are not optional.
 
