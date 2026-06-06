@@ -37,7 +37,7 @@ const LoginScreen = ({ onLogin, onRegister }) => {
           <EatLogo color="white" height={40} />
           <ListLogo color="white" height={30} />
         </div>
-        <div style={{ marginTop: 16, ...ts(14), color: 'rgba(255,255,255,0.45)', letterSpacing: '-0.02em' }}>playlists de restaurantes</div>
+        <div style={{ marginTop: 16, ...ts(14), color: 'rgba(255,255,255,0.72)', letterSpacing: '-0.02em' }}>playlists de restaurantes</div>
       </div>
 
       {/* Bottom: white sheet */}
