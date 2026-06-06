@@ -17,14 +17,13 @@ const MapScreen = ({ go, allLists }) => {
   const [activeFilter, setActiveFilter] = useState('Todos');
   const [selected, setSelected] = useState(null);
   const [query, setQuery] = useState('');
-  const filters = ['Todos', 'Abertos agora', 'Salvos', 'Amigos gostaram'];
+  const filters = ['Todos', 'Salvos', 'Amigos gostaram'];
 
   const allRestaurants = allLists.flatMap(l =>
     l.restaurants.map(r => ({ ...r, listTitle: l.title, listCategory: l.category }))
   );
 
-  const byFilter = activeFilter === 'Todos' ? allRestaurants
-    : activeFilter === 'Abertos agora' ? allRestaurants.filter(r => r.isOpen !== false)
+  const byFilter = activeFilter === 'Todos' ? allRestaurants.filter(r => r.saved || r.likes > 0 || r.friendsLiked > 0)
     : activeFilter === 'Salvos' ? allRestaurants.filter(r => r.saved)
     : allRestaurants.filter(r => r.friendsLiked > 0);
 
@@ -373,8 +372,8 @@ const RestaurantScreen = ({ go, back, restaurantId, allLists }) => {
           {/* Like/dislike */}
           <div style={{ display: 'flex', gap: 8, marginTop: 16, alignItems: 'center' }}>
             {[
-              { type: 'up',   count: restaurant.likes    + (liked === 'up'   ? 1 : 0), friendCount: restaurant.friendsLiked,    col: COBALT      },
-              { type: 'down', count: restaurant.dislikes + (liked === 'down' ? 1 : 0), friendCount: restaurant.friendsDisliked, col: DESTRUCTIVE },
+              { type: 'up',   count: restaurant.likes    + (liked === 'up'   ? 1 : 0), friendCount: restaurant.friendsLiked,    col: INK },
+              { type: 'down', count: restaurant.dislikes + (liked === 'down' ? 1 : 0), friendCount: restaurant.friendsDisliked, col: INK },
             ].map(({ type, count, friendCount, col }) => {
               const isActive = liked === type;
               const avatars = friends.slice(0, Math.min(friendCount, 3));
