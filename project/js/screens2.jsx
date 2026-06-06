@@ -168,20 +168,6 @@ const ListOpenScreen = ({ dark, go, back, listId, allLists }) => {
   const [friendsSheet, setFriendsSheet] = useState(null); // { type: 'up'|'down', restaurant }
   const [addToListSheet, setAddToListSheet] = useState(null); // restaurant
   const [followersSheet, setFollowersSheet] = useState(false);
-  const followLongPressTimer = useRef(null);
-
-  const startFollowLongPress = () => {
-    followLongPressTimer.current = setTimeout(() => {
-      followLongPressTimer.current = 'fired';
-      setFollowersSheet(true);
-    }, 500);
-  };
-  const cancelFollowLongPress = () => {
-    if (followLongPressTimer.current && followLongPressTimer.current !== 'fired') {
-      clearTimeout(followLongPressTimer.current);
-    }
-    followLongPressTimer.current = null;
-  };
 
   if (!list) return null;
 
@@ -221,11 +207,8 @@ const ListOpenScreen = ({ dark, go, back, listId, allLists }) => {
               if (mutuals.length === 0) return null;
               return (
                 <div
-                  onPointerDown={startFollowLongPress}
-                  onPointerUp={cancelFollowLongPress}
-                  onPointerLeave={cancelFollowLongPress}
-                  onContextMenu={e => e.preventDefault()}
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, background: c.surf, borderRadius: 100, padding: '5px 10px 5px 8px', cursor: 'pointer', userSelect: 'none' }}>
+                  onClick={() => setFollowersSheet(true)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, background: c.surf, borderRadius: 100, padding: '5px 10px 5px 8px', cursor: 'pointer' }}>
                   {mutuals.map((f, i) => (
                     <img key={f.id} src={f.avatar} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', border: `2px solid ${c.bg}`, marginLeft: i > 0 ? -8 : 0 }}/>
                   ))}
@@ -403,25 +386,6 @@ const RestaurantScreen = ({ dark, go, back, restaurantId, allLists }) => {
       return next;
     });
   };
-  const longPressTimer = useRef(null);
-
-  const startLongPress = (type) => {
-    longPressTimer.current = setTimeout(() => {
-      longPressTimer.current = 'fired';
-      setFriendsSheet(type);
-    }, 500);
-  };
-  const cancelLongPress = () => {
-    if (longPressTimer.current && longPressTimer.current !== 'fired') {
-      clearTimeout(longPressTimer.current);
-    }
-    longPressTimer.current = null;
-  };
-  const handleLikeClick = (type) => {
-    if (longPressTimer.current === 'fired') { longPressTimer.current = null; return; }
-    cancelLongPress();
-    setLiked(v => v === type ? null : type);
-  };
 
   if (!restaurant) return null;
   const mapId = useRef(`rmap-${restaurantId}`);
@@ -487,11 +451,8 @@ const RestaurantScreen = ({ dark, go, back, restaurantId, allLists }) => {
               const avatars = friends.slice(0, Math.min(friendCount, 3));
               return (
                 <button key={type}
-                  onPointerDown={() => startLongPress(type)}
-                  onPointerUp={() => handleLikeClick(type)}
-                  onPointerLeave={cancelLongPress}
-                  onContextMenu={e => e.preventDefault()}
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 100, border: 'none', cursor: 'pointer', background: isActive ? activeCol + '25' : c.surf, transition: 'all 0.15s', userSelect: 'none' }}>
+                  onClick={() => setFriendsSheet(type)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 100, border: 'none', cursor: 'pointer', background: isActive ? activeCol + '25' : c.surf, transition: 'all 0.15s' }}>
                   {type === 'up'
                     ? <ThumbUpIc s={15} col={col}/>
                     : <ThumbDownIc s={15} col={col}/>}

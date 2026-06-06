@@ -38,13 +38,14 @@ Copie o bloco abaixo e preencha ao final de cada batch de trabalho:
 
 ## [v0.1] — 2026-06-05
 
-**Tasks concluídas:** 1.2, 1.1, 1.5  
+**Tasks concluídas:** 1.2, 1.1, 1.5, 1.4  
 **Resumo:** Fixes visuais na tela de login e títulos.
 
 ### Detalhes
 - **1.2 — Raise login tagline opacity:** Opacidade do tagline "playlists de restaurantes" alterada de ~45% para 72% (rgba(255,255,255,0.72)). Commit: SCRUM-5.
 - **1.1 — Bold display-sized titles:** fontWeight alterado de 400 para 600 nos títulos de fontSize 28/30 (RestaurantScreen e ListOpenScreen). Commit: SCRUM-6.
 - **1.5 — Redirect after list creation:** Após criar lista, navegação redirecionada para a tela da nova lista em vez do Home. Commit: SCRUM-10.
+- **1.4 — Fix map search bar:** Search bar do mapa substituída por input real com filtro de markers por nome em tempo real. Commit: SCRUM-9.
 
 ---
 
@@ -71,7 +72,7 @@ Copie o bloco abaixo e preencha ao final de cada batch de trabalho:
 - 🔲 SCRUM-8 · [1.3] Form validation on Register
 
 ### Onda 4 — Maior complexidade (stretch goal)
-- 🔲 SCRUM-9 · [1.4] Fix map search bar
+- ✅ SCRUM-9 · [1.4] Fix map search bar
 - 🔲 SCRUM-11 · [1.6] Long-press → regular tap
 - 🔲 SCRUM-12 · [1.8] Home "+" → action sheet
 
@@ -85,8 +86,8 @@ Copie o bloco abaixo e preencha ao final de cada batch de trabalho:
 
 | Fase | Total | Concluídas | Restantes |
 | --- | --- | --- | --- |
-| Phase 1 — UX & Content | 15 | 3 | 12 |
+| Phase 1 — UX & Content | 15 | 4 | 11 |
 | Phase 2 — Visual Polish | 10 | 0 | 10 |
 | Phase 3 — Product Flows | 6 | 0 | 6 |
 | Phase 4 — Structural | 5 | 0 | 5 |
-| **Total** | **36** | **3** | **33** |
+| **Total** | **36** | **4** | **32** |
